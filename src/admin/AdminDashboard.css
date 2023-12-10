@@ -1,0 +1,6 @@
+.profile-card{ @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@500&display=swap'); font-family: 'Open Sans', sans-serif; font-size: 20px;} p{ color: #0088a9 }
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&family=Rubik&display=swap');
+.dashboard-tabs-headings{
+font-family: 'Rubik', sans-serif;
+}

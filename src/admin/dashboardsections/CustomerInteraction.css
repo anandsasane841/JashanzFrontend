@@ -1,0 +1,1 @@
+.messages__item { max-width: 60%; margin: 0 auto; } .messages__item--visitor { border-top-left-radius: 20px; border-top-right-radius: 20px; border-bottom-right-radius: 20px; } .messages__item--operator { border-top-left-radius: 20px; border-top-right-radius: 20px; border-bottom-left-radius: 20px; background: var(--info); color: white; }
