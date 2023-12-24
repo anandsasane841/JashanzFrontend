@@ -79,7 +79,7 @@ const Aboutus = () => {
 
         <img
           className="image-animation"
-          src="4step.png"
+          src="https://jashanz-primary.s3.ap-south-1.amazonaws.com/4step.png"
           alt="4step"
           width="630"
           height="620"
@@ -123,7 +123,7 @@ const Aboutus = () => {
               receive a prompt refund.
             </p>
             <p class="about-paragraph">
-              To ensure efficiency, we've set a 3-hour timeframe for event
+              To ensure efficiency, we've set a 1-hour timeframe for event
               managers to accept or decline bookings. If they confirm within
               this time, your booking is locked in; otherwise, it's
               automatically canceled. We're committed to providing a formal and
@@ -135,7 +135,7 @@ const Aboutus = () => {
         </div>
       </div>
 
-      <div className="row mt-4">
+      <div className="row mt-4 event-card">
         <div className="col-md-4">
           <Card className="text-center text-info">
             <Card.Body>
@@ -175,7 +175,7 @@ const Aboutus = () => {
         </div>
       </div>
 
-      <div className="row mt-4">
+      <div className="row mt-4 event-card">
         <div className="col-md-6">
           <Card className="text-center text-info">
             <Card.Body>
@@ -201,30 +201,7 @@ const Aboutus = () => {
         </div>
       </div>
 
-      <div className="container text-center">
-        <div className="row">
-          <div>
-            <div className="ceo-card text-center">
-              <img src="Anand.jpg" alt="CEO" />
-              <h3 className="fs-4 booking-text mt-3">Chief Executive Officer</h3>
-              <strong className="fs-5 text-dark booking-heading">
-                Anand Sasane
-              </strong>
-              <p className="booking-values">ceo@zealouvirtuoso.com</p>
-            </div>
-          </div>
-          <div>
-            <div className="cfo-card text-center">
-              <img src="Akshay.jpg" alt="CFO" />
-              <h3 className="fs-4  booking-text mt-3">Chief Financial Officer</h3>
-              <strong className="fs-5 text-dark booking-heading">
-                Akshay Gaikwad
-              </strong>
-              <p className="booking-values">cfo@zealouvirtuoso.com</p>
-            </div>
-          </div>
-        </div>
-      </div>
+     
       <div className="class-divider">
       <div className="text-right text-danger">
         {(localStorage.getItem("token") ||

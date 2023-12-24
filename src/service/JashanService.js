@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://ec2-3-110-169-224.ap-south-1.compute.amazonaws.com:8080";
+const API_BASE_URL = "http://jashanzapp-env.eba-3virwd3j.ap-south-1.elasticbeanstalk.com:8080";
 
 const endpoints = {
   GET_USER_OTP: "/api/generateUserOtp/",
@@ -8,9 +8,12 @@ const endpoints = {
   CUSTOMER_REGISTRATION: "/api/customers/register/",
   CUSTOMER_LOGIN: "/api/customers/login",
   CUSTOMER_LOGOUT: "/auth/logout",
+  GENERATE_RESET_PASSWORD_OTP_PATH :"api/generateResetPasswordOtp/",
+  VERIFY_RESET_PASSWORD_OTP_PATH : "api/verifyResetPasswordOtp/",
+  UPDATE_PASSWORD_PATH :"api/updatePassword/",
   LOGOUT_COMPLETED: "/api/logout-success",
-  ADMIN_REGISTRATION: "/api/manager/register/",
-  ADMIN_LOGIN: "/api/manager/login",
+  ADMIN_REGISTRATION: "/api/admin/register/",
+  ADMIN_LOGIN: "/api/admin/login",
   MAIN_PAGE: "/selectEvent/",
   MAIN_PAGE_FILTER: "/selectEvent/filter/",
   ADMIN_PORTAL: "/admin/add-event/findadminbyemail/",
@@ -38,13 +41,29 @@ class JashanService {
     });
   }
 
+  getAmount(eventType) {
+    return this.axiosInstance.get(`${endpoints.GET_AMOUNT}${eventType}`);
+  }
   generateUserOtp(mobileNumber) {
     return this.axiosInstance.get(`${endpoints.GET_USER_OTP}${mobileNumber}`);
   }
-  
+
   generateAdminOtp(mobileNumber) {
     return this.axiosInstance.get(`${endpoints.GET_ADMIN_OTP}${mobileNumber}`);
   }
+/*
+  checkEmailOrMobileForForgotPassword(emailOrMobile) {
+    return this.axiosInstance.get(`GENERATE_RESET_PASSWORD_OTP_PATH${emailOrMobile}`);
+  }
+
+  verifyOtpForForgotPassword(emailOrMobile, otp) {
+    return this.axiosInstance.get(`VERIFY_RESET_PASSWORD_OTP_PATH${emailOrMobile}/${otp}`);
+  }
+
+  updatePassword(emailOrMobile, newPassword) {
+    return this.axiosInstance.post(`UPDATE_PASSWORD_PATH${emailOrMobile}/${newPassword}`);
+  }
+*/
   get_current_user(token) {
     return this.axiosInstance.get(endpoints.CURRENT_CUSTOMER, {
       headers: {
@@ -77,8 +96,11 @@ class JashanService {
     });
   }
 
-  user_register(user_data,otp) {
-    return this.axiosInstance.post(`${endpoints.CUSTOMER_REGISTRATION}${otp}`, user_data);
+  user_register(user_data, otp) {
+    return this.axiosInstance.post(
+      `${endpoints.CUSTOMER_REGISTRATION}${otp}`,
+      user_data
+    );
   }
 
   user_login(user_login) {
@@ -97,8 +119,11 @@ class JashanService {
     return this.axiosInstance.get(endpoints.LOGOUT_COMPLETED);
   }
 
-  admin_register(admin_data,otp) {
-    return this.axiosInstance.post(`${endpoints.ADMIN_REGISTRATION}${otp}`, admin_data);
+  admin_register(admin_data, otp) {
+    return this.axiosInstance.post(
+      `${endpoints.ADMIN_REGISTRATION}${otp}`,
+      admin_data
+    );
   }
 
   admin_login(admin_login) {
@@ -113,11 +138,12 @@ class JashanService {
     });
   }
 
-  add_Event(eventData, token) {
+  add_Event(eventData, token, onUploadProgress) {
     return this.axiosInstance.post(endpoints.ADMIN_PORTAL_ADDEVENT, eventData, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      onUploadProgress, // Attach the onUploadProgress callback here
     });
   }
 

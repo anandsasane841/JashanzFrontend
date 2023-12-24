@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import JashanService from "../service/JashanService";
 import "./ViewComponent.css";
@@ -21,6 +21,20 @@ const ViewComponent = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const isLoggedIn = true;
   const [isLoading, setIsLoading] = useState(false);
+const videoRef = useRef();
+
+const playOrPause = () => {
+  const video = videoRef.current;
+  if (video) {
+    video.paused ? video.play() : video.pause();
+    const backgroundVideo = document.getElementById("video"); // Update the ID here
+    if (backgroundVideo) {
+      backgroundVideo.paused ? backgroundVideo.play() : backgroundVideo.pause();
+    }
+  }
+};
+
+  
 
   useEffect(() => {
     setIsLoading(true);
@@ -99,9 +113,38 @@ const ViewComponent = () => {
               <div className="loader"></div>
             ) : (
               <div>
-                <div className="card-body">
-                  <div className="event-icon class-divider">
+               <div className="card-body border rounded p-3  with-video-background">
+               <div className="class-divider">
+      <div className="video-background">
+        <video
+          id="video"
+          width="320"
+          height="240"
+          ref={videoRef}
+          onClick={playOrPause}
+          className="video-element"
+          loop
+        >
+          <source src={event.videoUrl} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+      <div className="video-container text-center">
+        <video
+          id="original-video"
+          width="60%"
+          height="40%"
+          style={{ borderRadius: '20px' }}
+          ref={videoRef}
+          onClick={playOrPause}
+        >
+          <source src={event.videoUrl} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+                  <div className="event-icon">
                     <ImageComponent event={event} />
+                  </div>
                   </div>
                   <div className="event-info class-divider">
                     <p className="booking-text">
@@ -114,7 +157,7 @@ const ViewComponent = () => {
                         ₹{event.pricingDetails?.basePrice || "N/A"}
                       </span>
                     </p>
-                    
+
                     <p className="booking-text">
                       State:{" "}
                       <span className="booking-values">
@@ -134,7 +177,7 @@ const ViewComponent = () => {
                         {event.address?.pinCode || "N/A"}
                       </span>
                     </p>
-                    
+
                     <p className="booking-text">
                       Landmark:{" "}
                       <span className="booking-values">
@@ -168,14 +211,14 @@ const ViewComponent = () => {
                         </p>
                         <p className="text-dark booking-values">
                           Grand Total:{" "}
-                          <span className="text-dark booking-values">
+                          <span className="text-light booking-values">
                             ₹{totalPrice + gst}
                           </span>
                         </p>
                       </div>
                     )}
                   </div>
-                  <div className="additional-service class-divider">
+                  <div className="additional-service  class-divider">
                     <label htmlFor="additionalService">
                       Choose Additional Services:
                     </label>
@@ -184,12 +227,13 @@ const ViewComponent = () => {
                       name="additionalService"
                       value=""
                       onChange={handleServiceChange}
-                      className="form-control"
+                      className="form-control bg-transparent"
+
                     >
                       <option value="">Select additional services</option>
                       {event.pricingDetails?.additionalServices?.map(
                         (service) => (
-                          <option key={service.id} value={service.serviceName}>
+                          <option key={service.id}  value={service.serviceName}>
                             {service.serviceName} - ₹{service.price || "N/A"}
                           </option>
                         )
@@ -248,7 +292,7 @@ const ViewComponent = () => {
             )}
           </div>
 
-          <div className="class-divider">
+          <div className="class-divider footer-section">
             <Footer />
           </div>
         </div>

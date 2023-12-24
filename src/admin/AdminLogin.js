@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import Typed from "react-typed";
 import CustomLoader from "../CustomLoader";
 
+
 const AdminLogin = ({ isAuthenticatedAdmin, setIsAuthenticatedAdmin }) => {
   const navigate = useNavigate();
 
@@ -68,9 +69,9 @@ const AdminLogin = ({ isAuthenticatedAdmin, setIsAuthenticatedAdmin }) => {
 
     try {
       const mobile = formData.mobileNumber;
-      const { status } = await JashanService.generateAdminOtp(mobile);
-
-      if (status === 200) {
+      const res = await JashanService.generateAdminOtp(mobile);
+console.log(res.data);
+      if (res.status === 200) {
         const otp = prompt("Please enter the OTP sent to your email/mobile");
 
         if (!otp) {
@@ -104,9 +105,8 @@ const AdminLogin = ({ isAuthenticatedAdmin, setIsAuthenticatedAdmin }) => {
   };
 
   const sentences = [
-    "This section is exclusively for customers and users.",
-    "Others are kindly requested not to sign up or register.",
-    "Thank you for your understanding.",
+     "This form is exclusively designated for use by administrators, event organizers, birthday planners, DJ services, and banquet managers.",
+     "Customers and general users are kindly advised not to fill out this form.",
   ];
   return (
     <div>
@@ -119,8 +119,11 @@ const AdminLogin = ({ isAuthenticatedAdmin, setIsAuthenticatedAdmin }) => {
           </div>
 
           <div className="class-divider">
-            <p class="text-center font-weight-bold fs-4">
-              <Typed strings={sentences} typeSpeed={70} backSpeed={50} loop />
+            <div className="text-center">
+            <img src="https://jashanzprimary.s3.ap-south-1.amazonaws.com/AdminLogo+(1).png" alt="admin_portal" width="200" height="200" />
+              </div>
+            <p class="text-center font-weight-bold fs-5">
+            ⚠️ <Typed strings={sentences} typeSpeed={90} backSpeed={70} loop />
             </p>
 
             <div className="login-wrap">

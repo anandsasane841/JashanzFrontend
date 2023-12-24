@@ -25,6 +25,45 @@ const FillForm = ({ onEventAdded }) => {
     images: [],
   });
   const [error, setError] = useState(null);
+  const [videoData, setVideoData] = useState({ video: null, duration: 0 });
+
+  const handleInputChange = (
+    e,
+    field,
+    subfield = null,
+    subindex = null,
+    subsubfield = null
+  ) => {
+    setEventData((prevData) => {
+      const updatedData = { ...prevData };
+      if (subfield === null) {
+        updatedData[field] = e.target.value;
+      } else if (subindex === null) {
+        updatedData[field][subfield] = e.target.value;
+      } else {
+        if (subsubfield === null) {
+          updatedData[field][subfield][subindex] = e.target.value;
+        } else {
+          updatedData[field][subfield][subindex][subsubfield] = e.target.value;
+        }
+      }
+      return updatedData;
+    });
+  };
+
+  const handleVideoChange = async (e) => {
+    const selectedVideo = e.target.files[0];
+    console.log("SELECTED VIDEO" + selectedVideo);
+
+    if (selectedVideo && selectedVideo.type.startsWith("video/")) {
+      setVideoData({
+        video: selectedVideo,
+        duration: Math.round(selectedVideo.duration),
+      });
+    } else {
+      setError("Please select a valid video file.");
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,9 +73,8 @@ const FillForm = ({ onEventAdded }) => {
       "event",
       new Blob([JSON.stringify(eventData)], { type: "application/json" })
     );
-    for (let i = 0; i < eventData.images.length; i++) {
-      formData.append("images", eventData.images[i]);
-    }
+    eventData.images.forEach((image) => formData.append("images", image));
+    formData.append("video", videoData.video);
 
     const token = localStorage.getItem("admin-token");
     try {
@@ -76,67 +114,44 @@ const FillForm = ({ onEventAdded }) => {
   };
 
   const handleImageChange = (e) => {
-    const selectedImages = Array.from(e.target.files);
-    setEventData({
-      ...eventData,
-      images: selectedImages,
-    });
-  };
-
-  const handleInputChange = (
-    e,
-    field,
-    subfield = null,
-    subindex = null,
-    subsubfield = null
-  ) => {
-    const updatedData = { ...eventData };
-    if (subfield === null) {
-      updatedData[field] = e.target.value;
-    } else if (subindex === null) {
-      updatedData[field][subfield] = e.target.value;
-    } else {
-      if (subsubfield === null) {
-        updatedData[field][subfield][subindex] = e.target.value;
-      } else {
-        updatedData[field][subfield][subindex][subsubfield] = e.target.value;
-      }
-    }
-    setEventData(updatedData);
+    setEventData((prevData) => ({
+      ...prevData,
+      images: Array.from(e.target.files),
+    }));
   };
 
   const onUploadProgress = (progressEvent) => {
-    if (progressEvent.lengthComputable) {
-      const percentCompleted = Math.round(
-        (progressEvent.loaded * 100) / progressEvent.total
-      );
-      setProgress(percentCompleted);
-    } else {
-      // If total size is not computable, at least show some progress
-      setProgress((prevProgress) =>
-        prevProgress < 95 ? prevProgress + 5 : prevProgress
-      );
-    }
+    
+    const { loaded, total } = progressEvent;
+    const percentage = Math.round((loaded / total) * 100);
+        setProgress(percentage);
   };
 
   const addService = () => {
-    const updatedData = { ...eventData };
-    updatedData.pricingDetails.additionalServices.push({
-      serviceName: "",
-      price: "",
-    });
-    setEventData(updatedData);
+    setEventData((prevData) => ({
+      ...prevData,
+      pricingDetails: {
+        ...prevData.pricingDetails,
+        additionalServices: [
+          ...prevData.pricingDetails.additionalServices,
+          { serviceName: "", price: "" },
+        ],
+      },
+    }));
   };
 
   const removeService = (index) => {
-    const updatedData = { ...eventData };
-    updatedData.pricingDetails.additionalServices.splice(index, 1);
-    setEventData(updatedData);
+    setEventData((prevData) => {
+      const updatedData = { ...prevData };
+      updatedData.pricingDetails.additionalServices.splice(index, 1);
+      return updatedData;
+    });
   };
 
   return (
     <div className="container mt-4">
-      {!error && showProgressBar && (
+      <p className="fs-3">Event Form</p>
+      {showProgressBar ? (
         <div
           style={{
             width: "50%",
@@ -161,199 +176,217 @@ const FillForm = ({ onEventAdded }) => {
             }}
           ></div>
         </div>
-      )}
-      <p className="fs-3">Event Form</p>
-
-      <form onSubmit={handleSubmit} encType="multipart/form-data">
-        <div className="row mb-4">
-          <div className="col">
-            <label htmlFor="images" className="image-lable">
-              Upload
-            </label>
-            <input
-              type="file"
-              id="images"
-              name="images"
-              multiple
-              accept="image/*"
-              onChange={handleImageChange}
-            />
+      ) : (
+        <form onSubmit={handleSubmit} encType="multipart/form-data">
+          <div className="row mb-4">
+            <div className="col">
+              <label htmlFor="images" className="image-lable">
+                Upload
+              </label>
+              <input
+                type="file"
+                id="images"
+                name="images"
+                multiple
+                accept="image/*"
+                onChange={handleImageChange}
+                required
+              />
+            </div>
+            <div className="col">
+              <div className="form-outline">
+                <input
+                  type="text"
+                  className="form-control"
+                  id="basePrice"
+                  value={eventData.pricingDetails.basePrice}
+                  onChange={(e) =>
+                    handleInputChange(e, "pricingDetails", "basePrice")
+                  }
+                  required
+                />
+                <label className="form-label" htmlFor="basePrice">
+                  Base Price
+                </label>
+              </div>
+            </div>
           </div>
-          <div className="col">
-            <div className="form-outline">
+
+          <div className="row mb-4">
+            <div className="col">
+              <label htmlFor="video" className="form-label">
+                Submit Cool Promo
+              </label>
+              <input
+                type="file"
+                className="form-control"
+                id="video"
+                name="video"
+                accept="video/*"
+                onChange={handleVideoChange}
+              />
+              <div className="form-text">
+                Kindly furnish the particulars for your 30-second advertisement
+                video
+              </div>
+            </div>
+          </div>
+
+          <div className="row mb-4">
+            <div className="col">
               <input
                 type="text"
                 className="form-control"
-                id="basePrice"
-                value={eventData.pricingDetails.basePrice}
-                onChange={(e) =>
-                  handleInputChange(e, "pricingDetails", "basePrice")
-                }
+                id="country"
+                value={eventData.address.country}
+                disable
+              />
+              <label className="form-label" htmlFor="country">
+                Country
+              </label>
+            </div>
+
+            <div className="col">
+              <select
+                className="form-select"
+                id="state"
+                value={eventData.address.state}
+                onChange={(e) => handleInputChange(e, "address", "state")}
+                required
+              >
+                <option value="">Select State</option>
+                {stateCityData.map((stateData) => (
+                  <option key={stateData.state} value={stateData.state}>
+                    {stateData.state}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="row mb-4">
+            <div className="col">
+              <select
+                className="form-select"
+                id="city"
+                value={eventData.address.city}
+                onChange={(e) => handleInputChange(e, "address", "city")}
+                required
+              >
+                <option value="">Select City</option>
+                {stateCityData
+                  .find(
+                    (stateData) => stateData.state === eventData.address.state
+                  )
+                  ?.cities.map((city) => (
+                    <option key={city} value={city}>
+                      {city}
+                    </option>
+                  ))}
+              </select>
+            </div>
+
+            <div className="col">
+              <input
+                type="text"
+                className="form-control"
+                id="pinCode"
+                value={eventData.address.pinCode}
+                onChange={(e) => handleInputChange(e, "address", "pinCode")}
                 required
               />
-              <label className="form-label" htmlFor="basePrice">
-                Base Price
+              <label className="form-label" htmlFor="pinCode">
+                Pin Code
               </label>
             </div>
           </div>
-        </div>
 
-        <div className="row mb-4">
-          <div className="col">
+          <div className="form-outline mb-4">
             <input
               type="text"
               className="form-control"
-              id="country"
-              value={eventData.address.country}
-              disable
+              id="landmark"
+              value={eventData.address.landmark}
+              onChange={(e) => handleInputChange(e, "address", "landmark")}
+              required
             />
-            <label className="form-label" htmlFor="country">
-              Country
+            <label className="form-label" htmlFor="landmark">
+              Landmark
             </label>
           </div>
 
-          <div className="col">
-            {/* State select input */}
-            <select
-              className="form-select"
-              id="state"
-              value={eventData.address.state}
-              onChange={(e) => handleInputChange(e, "address", "state")}
-              required
-            >
-              <option value="">Select State</option>
-              {stateCityData.map((stateData) => (
-                <option key={stateData.state} value={stateData.state}>
-                  {stateData.state}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+          <div className="form-group">
+            {eventData.pricingDetails.additionalServices.map(
+              (service, index) => (
+                <div key={index}>
+                  <div className="row mb-4">
+                    <div className="col">
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Service Name"
+                        value={service.serviceName}
+                        onChange={(e) =>
+                          handleInputChange(
+                            e,
+                            "pricingDetails",
+                            "additionalServices",
+                            index,
+                            "serviceName"
+                          )
+                        }
+                        required
+                      />
+                      <label className="form-label" htmlFor="serviceName">
+                        Service Name
+                      </label>
+                    </div>
 
-        <div className="row mb-4">
-          <div className="col">
-            {/* City select input */}
-            <select
-              className="form-select"
-              id="city"
-              value={eventData.address.city}
-              onChange={(e) => handleInputChange(e, "address", "city")}
-              required
-            >
-              <option value="">Select City</option>
-              {stateCityData
-                .find(
-                  (stateData) => stateData.state === eventData.address.state
-                )
-                ?.cities.map((city) => (
-                  <option key={city} value={city}>
-                    {city}
-                  </option>
-                ))}
-            </select>
-          </div>
-
-          <div className="col">
-            <input
-              type="text"
-              className="form-control"
-              id="pinCode"
-              value={eventData.address.pinCode}
-              onChange={(e) => handleInputChange(e, "address", "pinCode")}
-              required
-            />
-            <label className="form-label" htmlFor="pinCode">
-              Pin Code
-            </label>
-          </div>
-        </div>
-
-        <div className="form-outline mb-4">
-          <input
-            type="text"
-            className="form-control"
-            id="landmark"
-            value={eventData.address.landmark}
-            onChange={(e) => handleInputChange(e, "address", "landmark")}
-            required
-          />
-          <label className="form-label" htmlFor="landmark">
-            Landmark
-          </label>
-        </div>
-
-        {/* Additional Services */}
-        <div className="form-group">
-          {eventData.pricingDetails.additionalServices.map((service, index) => (
-            <div key={index}>
-              <div className="row mb-4">
-                <div className="col">
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Service Name"
-                    value={service.serviceName}
-                    onChange={(e) =>
-                      handleInputChange(
-                        e,
-                        "pricingDetails",
-                        "additionalServices",
-                        index,
-                        "serviceName"
-                      )
-                    }
-                    required
-                  />
-                  <label className="form-label" htmlFor="serviceName">
-                    Service Name
-                  </label>
+                    <div className="col">
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Price"
+                        value={service.price}
+                        onChange={(e) =>
+                          handleInputChange(
+                            e,
+                            "pricingDetails",
+                            "additionalServices",
+                            index,
+                            "price"
+                          )
+                        }
+                        required
+                      />
+                      <label className="form-label" htmlFor="price">
+                        Price
+                      </label>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <button
+                      type="button"
+                      className="button-no"
+                      onClick={() => removeService(index)}
+                    >
+                      Remove Service
+                    </button>
+                  </div>
                 </div>
+              )
+            )}
+            <button type="button" className="button-yes" onClick={addService}>
+              Add Service
+            </button>
+          </div>
 
-                <div className="col">
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Price"
-                    value={service.price}
-                    onChange={(e) =>
-                      handleInputChange(
-                        e,
-                        "pricingDetails",
-                        "additionalServices",
-                        index,
-                        "price"
-                      )
-                    }
-                    required
-                  />
-                  <label className="form-label" htmlFor="price">
-                    Price
-                  </label>
-                </div>
-              </div>
-              <div className="text-right">
-                <button
-                  type="button"
-                  className="button-no"
-                  onClick={() => removeService(index)}
-                >
-                  Remove Service
-                </button>
-              </div>
-            </div>
-          ))}
-          <button type="button" className="button-yes" onClick={addService}>
-            Add Service
+          <button type="submit" className="button-yes">
+            Submit
           </button>
-        </div>
-
-        <button type="submit" className="button-yes">
-          Submit
-        </button>
-        {/* Add this where you want to display the error message */}
-        {error && <p style={{ color: "red" }}>{error}</p>}
-      </form>
+          {error && <p style={{ color: "red" }}>{error}</p>}
+        </form>
+      )}
     </div>
   );
 };

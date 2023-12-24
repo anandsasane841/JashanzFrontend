@@ -34,7 +34,7 @@ const CustomerInteraction = () => {
    
     setAcceptDisabled(true);
     setRejectDisabled(true);
-    const successMessage = "You have successfully Accepted Booking";
+    const successMessage = "You have successfully ACCEPTED Booking";
     setBookingMessages((prevMessages) => ({
       ...prevMessages,
       [bookingId]: { message: successMessage, color: "green" },
@@ -54,7 +54,7 @@ const CustomerInteraction = () => {
   const handleReject = (bookingId) => {
     setAcceptDisabled(true);
     setRejectDisabled(true);
-    const errorMessage = "You have successfully Rejected Booking";
+    const errorMessage = "You have successfully REJECTED Booking";
     setBookingMessages((prevMessages) => ({
       ...prevMessages,
       [bookingId]: { message: errorMessage, color: "red" },
@@ -145,7 +145,7 @@ const CustomerInteraction = () => {
                     </p>
                   </div>
                  
-                 {booking.bookingResponse === "Accepted" && (
+                 {booking.bookingStatus === "ACCEPTED" && (
                   <div>
                     <p className="booking-text">
                       <strong>Contact Number:</strong>{" "}
@@ -174,11 +174,11 @@ const CustomerInteraction = () => {
                   )}
                 </div>
                 <div className="action-buttons pb-3">
-                  {booking.bookingResponse === "Accepted" ? (
+                  {booking.bookingStatus === "ACCEPTED" ? (
                     <p className="fs-3 text-dark">
                       This request is already Accepted
                     </p>
-                  ) : booking.bookingResponse === "Rejected" ? (
+                  ) : booking.bookingStatus === "REJECTED" ? (
                     <p className="fs-3 text-danger">
                       This request is already Rejected
                     </p>

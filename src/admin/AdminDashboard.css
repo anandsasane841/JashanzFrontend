@@ -1,6 +1,1 @@
-.profile-card{ @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@500&display=swap'); font-family: 'Open Sans', sans-serif; font-size: 20px;} p{ color: #0088a9 }
-
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&family=Rubik&display=swap');
-.dashboard-tabs-headings{
-font-family: 'Rubik', sans-serif;
-}
+.profile-card { @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@500&display=swap"); font-family: "Open Sans", sans-serif; font-size: 20px; } p { color: #0088a9; } @import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300&family=Rubik&display=swap"); .dashboard-tabs-headings { font-family: "Rubik", sans-serif; } @media screen and (max-width: 768px) { .nav-tabs { flex-wrap: nowrap; overflow-x: auto; width: 150vw; } .nav-item { width: auto; white-space: nowrap; text-align: center; } .nav-link { padding: 8px; } .dashboard-tabs-headings { font-size: 14px; } .tab-content { text-align: -webkit-center; padding: 10px; } } @media (min-width: 475px) { .container { max-width: 475px; } } @media (min-width: 640px) { .container { max-width: 640px; } } @media (min-width: 768px) { .container { max-width: 768px; } } @media (min-width: 1024px) { .container { max-width: 1024px; } } @media (min-width: 1280px) { .container { max-width: 1280px; } } @media (min-width: 1536px) { .container { max-width: 1536px; } }

@@ -41,7 +41,7 @@ const BookingRequests = () => {
   const filteredBookings = bookingData.filter((booking) => {
     if (
       (filters.bookingStatus === "" ||
-        booking.bookingResponse === filters.bookingStatus) &&
+        booking.bookingStatus === filters.bookingStatus) &&
       (filters.bookingDate === "" ||
         booking.bookingDate === filters.bookingDate) &&
       (filters.event === "" || booking.eventName.includes(filters.event))
@@ -57,7 +57,7 @@ const BookingRequests = () => {
         <Header isLoggedIn={isLoggedIn} />
       </div>
       <div className="container">
-        <h3 className="text-dark booking-heading mb-4">Booking Requests</h3>
+        <h3 className="text-center text-dark booking-heading mb-4">Booking Console📋</h3>
 
         <div className="row mb-4">
           <div className="col-md-4">
@@ -69,8 +69,9 @@ const BookingRequests = () => {
               }
             >
               <option value="">Filter by Booking Status</option>
-              <option value="Accepted">Accepted</option>
-              <option value="Rejected">Rejected</option>
+              <option value="Accepted">ACCEPTED</option>
+              <option value="Rejected">REJECTED</option>
+              <option value="Rejected">PENDING</option>
             </select>
           </div>
           <div className="col-md-4">
@@ -139,18 +140,18 @@ const BookingRequests = () => {
                       Booking Status:{" "}
                       <span
                         className={
-                          booking.bookingResponse === "Accepted"
+                          booking.bookingStatus === "ACCEPTED"
                             ? "text-success"
-                            : booking.bookingResponse === "Rejected"
+                            : booking.bookingStatus === "REJECTED"
                             ? "text-danger"
                             : "text-warning"
                         }
                       >
-                        {booking.bookingResponse !== "Accepted" && booking.bookingResponse !== "Rejected" ? "Pending" : booking.bookingResponse}
+                        {booking.bookingStatus !== "ACCEPTED" && booking.bookingStatus !== "REJECTED" ? "PENDING" : booking.bookingStatus}
                       </span>
                     </p>{" "}
 
-                    {booking.bookingResponse === "Accepted" && (
+                    {booking.bookingStatus === "Accepted" && (
                   <div>
                     <p className="card-text booking-text">
                       Contact Number:{" "}
@@ -171,7 +172,7 @@ const BookingRequests = () => {
           )}
         </div>
       </div>
-      <div className="class-divider">
+      <div className="class-divider ">
         <Footer />
       </div>
     </div>

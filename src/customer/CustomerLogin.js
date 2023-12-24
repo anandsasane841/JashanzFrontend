@@ -62,9 +62,9 @@ const CustomerLogin = ({ isAuthenticatedUser, setIsAuthenticatedUser }) => {
 
     try {
       const mobile = formData.mobileNumber;
-      const { status } = await JashanService.generateUserOtp(mobile);
-
-      if (status === 200) {
+      const res= await JashanService.generateUserOtp(mobile);
+      console.log(res.data);
+      if (res.status=== 200) {
         const otp = prompt("Please enter the OTP sent to your email/mobile");
 
         if (!otp) {

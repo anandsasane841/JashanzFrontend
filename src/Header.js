@@ -34,92 +34,84 @@ const Header = ({ isLoggedIn, isAdmin }) => {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg container">
-      <div className="container">
-        <div className="navbar-brand">
-          <div>
-            <a href="/">
-              <img
-                src="https://res.cloudinary.com/dvqxcqg2n/image/upload/v1699425006/icdhtflmuxuqafm5wxht.png"
-                alt="site-logo"
-                width="70"
-                height="60"
-              />
-            </a>
-
-            <strong className="fs-1 domain-brand">
-              Jashan<span style={{ color: "#0daefb" }}>z.com</span>
-            </strong>
-          </div>
+    <header>
+      
+      <nav class="navbar navbar-expand-lg navStyle">
+        <div>
+          <a class="brand-navbar" href="/">
+            {" "}
+            <img
+              src="https://jashanzprimary.s3.ap-south-1.amazonaws.com/jzlogo.png "
+              alt="site-logo"
+              height="60px"
+            />
+          </a>
+          <strong className="fs-1 domain-brand">
+            Jashan<span style={{ color: "#0daefb" }}>z.com</span>
+          </strong>
         </div>
-
         <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarToggleExternalContent"
-          aria-controls="navbarToggleExternalContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
+          class="navbar-toggler"
+          data-toggle="collapse"
+          data-target="#mainMenu"
         >
-          <span className="navbar-toggler-icon"></span>
+          <span>
+            <i class="fas fa-align-right iconStyle"></i>
+          </span>
         </button>
-      </div>
-
-      <div
-        className="collapse navbar-collapse"
-        id="navbarToggleExternalContent"
-      >
-        <ul className="navbar-nav">
-          <li className="nav-item">
-            <div className="form-check form-switch">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                role="switch"
-                id="flexSwitchCheckDefault"
-                checked={isDarkMode}
-                onChange={toggleDarkMode}
-              />
-            </div>
-          </li>
-
-          {!localStorage.getItem("token") && (
+        <div class="collapse navbar-collapse" id="mainMenu">
+          <ul class="navbar-nav ml-auto navList">
             <li className="nav-item">
-              <a className="nav-link " href="/admin">
-                <i className="fas fa-user-circle fa-2x"></i>
-              </a>
-            </li>
-          )}
-          {isLoggedIn && localStorage.getItem("token") && (
-            <li className="nav-item">
-              <a className="nav-link" href="/bookings-status">
-                <i className="fas fa-book fa-2x"></i>
-              </a>
-            </li>
-          )}
-
-          <li className="nav-item">
-            <a className="nav-link" href="/aboutus">
-              <i className="fas fa-building fa-2x"></i>
-            </a>
-          </li>
-
-          {isLoggedIn && (
-            <li className="nav-item">
-              <div className="nav-link" onClick={handleLogout}>
-                <i className="fas fa-sign-out-alt fa-2x"></i>
+              <div className="form-check form-switch">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id="flexSwitchCheckDefault"
+                  checked={isDarkMode}
+                  onChange={toggleDarkMode}
+                />
               </div>
             </li>
-          )}
-          <li className="nav-item">
-            <a href="mailto:business@jashan.com" className="text-white">
-              <button className="contact-btn">Contact</button>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </nav>
+
+            <li className="nav-item">
+              <a href="/aboutus">
+                <i className="fas fa-building fa-2x"></i>
+              </a>
+            </li>
+            {!localStorage.getItem("token") && (
+              <li className="nav-item">
+                <a href="/admin">
+                  <i className="fas fa-user-circle fa-2x"></i>
+                </a>
+              </li>
+            )}
+
+            {isLoggedIn && localStorage.getItem("token") && (
+              <li className="nav-item">
+                <a href="/bookings-status">
+                  <i className="fas fa-book fa-2x"></i>
+                </a>
+              </li>
+            )}
+
+            {isLoggedIn && (
+              <li className="nav-item">
+                <div onClick={handleLogout}>
+                  <i className="fas fa-sign-out-alt fa-2x"></i>
+                </div>
+              </li>
+            )}
+
+            <li class="nav-item">
+              <a href="mailto:support@jashanz.com?subject=Query%20Regarding%20Recent%20Event:%20Let's%20Discuss">
+                <button className="contact-btn">Contact</button>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
   );
 };
 

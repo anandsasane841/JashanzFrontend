@@ -245,7 +245,7 @@ const MainComponent = () => {
         </div>
       </div>
 
-      <div className="class-divider">
+      <div className="class-divider footer-section">
         <Footer />
       </div>
     </div>

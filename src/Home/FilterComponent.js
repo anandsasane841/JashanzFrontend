@@ -4,27 +4,27 @@ import "./FilterComponent.css";
 const options = [
   {
     value: "Birthday",
-    image: "./FilterImages/birthday.png",
+    image: "https://jashanzprimary.s3.ap-south-1.amazonaws.com/birthday.png",
     text: "A Memorable Birthday Bash!",
   },
   {
     value: "Marriage Ceremony",
-    image: "./FilterImages/Marriage.jpg",
+    image: "https://jashanzprimary.s3.ap-south-1.amazonaws.com/day_wedding.png",
     text: "Crafting Your Dream Wedding",
   },
   {
     value: "Get Together or Party",
-    image: "./FilterImages/GetTogether.jpg",
+    image: "https://jashanzprimary.s3.ap-south-1.amazonaws.com/celebrationV.1.png",
     text: "Gather and Celebrate!",
   },
   {
     value: "Occasion Organizers",
-    image: "./FilterImages/eventTm.png",
+    image: "https://jashanzprimary.s3.ap-south-1.amazonaws.com/Tmwk.png",
     text: "Your Event, Our Expertise",
   },
   {
     value: "Disc Jockey",
-    image: "./FilterImages/DJ.jpg",
+   image: "https://jashanzprimary.s3.ap-south-1.amazonaws.com/DJ.png",
     text: "Choose your favorite DJ",
   },
 ];

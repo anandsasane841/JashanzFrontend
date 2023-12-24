@@ -27,7 +27,6 @@ const BookingForm = ({
     eventName: "",
     pricingDetails: "",
     additionalServices: "", // No need to set this here
-    bookingStatus: "",
     bookingDate: "",
     bookingTime: "",
     paymentStatus: "",
@@ -67,7 +66,6 @@ const BookingForm = ({
         eventName: event.eventType,
         pricingDetails: event.pricingDetails.basePrice,
         additionalServices: selectedServicesState.join(", "), // Update with selected services
-        bookingStatus: "bookingConfirmed",
         bookingDate: bookingData.bookingDate, // Set the actual date and time values
         bookingTime: bookingData.bookingTime, // Set the actual date and time values
         paymentStatus: "Paid",

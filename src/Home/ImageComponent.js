@@ -10,7 +10,6 @@ const ImageComponent = ({ event }) => {
         width: "60%",
         height: "40%",
         margin: "auto",
-        boxShadow: "rgba(0, 0, 0, 0.4) 0px 16px 32px",
       }}
     >
       <div
@@ -25,6 +24,8 @@ const ImageComponent = ({ event }) => {
                 src={image.imgUrl}
                 class="d-block w-100"
                 alt={`image-${index}`}
+                style={{ borderRadius: '20px' }}
+
               />
             </div>
           ))}
