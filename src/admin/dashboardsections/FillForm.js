@@ -5,6 +5,18 @@ import JashanService from "../../service/JashanService";
 import { useNavigate } from "react-router-dom";
 import "./FillForm.css";
 import { stateCityData } from "./StateandCities";
+import {
+  LinearProgress,
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Container,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+} from "@material-ui/core";
 
 const FillForm = ({ onEventAdded }) => {
   const navigate = useNavigate();
@@ -53,7 +65,6 @@ const FillForm = ({ onEventAdded }) => {
 
   const handleVideoChange = async (e) => {
     const selectedVideo = e.target.files[0];
-    console.log("SELECTED VIDEO" + selectedVideo);
 
     if (selectedVideo && selectedVideo.type.startsWith("video/")) {
       setVideoData({
@@ -121,10 +132,9 @@ const FillForm = ({ onEventAdded }) => {
   };
 
   const onUploadProgress = (progressEvent) => {
-    
     const { loaded, total } = progressEvent;
     const percentage = Math.round((loaded / total) * 100);
-        setProgress(percentage);
+    setProgress(percentage);
   };
 
   const addService = () => {
@@ -149,11 +159,11 @@ const FillForm = ({ onEventAdded }) => {
   };
 
   return (
-    <div className="container mt-4">
-      <p className="fs-3">Event Form</p>
+    <Container className="mt-4">
+      <Typography variant="h4">Event Form</Typography>
       {showProgressBar ? (
-        <div
-          style={{
+        <Box
+          sx={{
             width: "50%",
             position: "fixed",
             top: "50%",
@@ -166,22 +176,23 @@ const FillForm = ({ onEventAdded }) => {
             textAlign: "center",
           }}
         >
-          <p>Uploading: {progress}%</p>
-          <div
-            style={{
+          <Typography variant="h6">Uploading: {progress}%</Typography>
+          <LinearProgress
+            variant="determinate"
+            value={progress}
+            sx={{
               height: "20px",
-              backgroundColor: "#3498db",
-              width: `${progress}%`,
               borderRadius: "4px",
+              backgroundColor: "#3498db",
             }}
-          ></div>
-        </div>
+          />
+        </Box>
       ) : (
         <form onSubmit={handleSubmit} encType="multipart/form-data">
           <div className="row mb-4">
             <div className="col">
               <label htmlFor="images" className="image-lable">
-                Upload
+                Click For Images Upload
               </label>
               <input
                 type="file"
@@ -193,26 +204,6 @@ const FillForm = ({ onEventAdded }) => {
                 required
               />
             </div>
-            <div className="col">
-              <div className="form-outline">
-                <input
-                  type="text"
-                  className="form-control"
-                  id="basePrice"
-                  value={eventData.pricingDetails.basePrice}
-                  onChange={(e) =>
-                    handleInputChange(e, "pricingDetails", "basePrice")
-                  }
-                  required
-                />
-                <label className="form-label" htmlFor="basePrice">
-                  Base Price
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <div className="row mb-4">
             <div className="col">
               <label htmlFor="video" className="form-label">
                 Submit Cool Promo
@@ -231,88 +222,103 @@ const FillForm = ({ onEventAdded }) => {
               </div>
             </div>
           </div>
-
           <div className="row mb-4">
             <div className="col">
-              <input
+              <TextField
                 type="text"
-                className="form-control"
-                id="country"
-                value={eventData.address.country}
-                disable
-              />
-              <label className="form-label" htmlFor="country">
-                Country
-              </label>
-            </div>
-
-            <div className="col">
-              <select
-                className="form-select"
-                id="state"
-                value={eventData.address.state}
-                onChange={(e) => handleInputChange(e, "address", "state")}
+                label="Base Price"
+                value={eventData.pricingDetails.basePrice}
+                onChange={(e) =>
+                  handleInputChange(e, "pricingDetails", "basePrice")
+                }
                 required
-              >
-                <option value="">Select State</option>
-                {stateCityData.map((stateData) => (
-                  <option key={stateData.state} value={stateData.state}>
-                    {stateData.state}
-                  </option>
-                ))}
-              </select>
+                fullWidth
+              />
             </div>
           </div>
 
           <div className="row mb-4">
             <div className="col">
-              <select
-                className="form-select"
-                id="city"
-                value={eventData.address.city}
-                onChange={(e) => handleInputChange(e, "address", "city")}
-                required
-              >
-                <option value="">Select City</option>
-                {stateCityData
-                  .find(
-                    (stateData) => stateData.state === eventData.address.state
-                  )
-                  ?.cities.map((city) => (
-                    <option key={city} value={city}>
-                      {city}
-                    </option>
-                  ))}
-              </select>
+              <FormControl fullWidth>
+                <InputLabel id="country-label"></InputLabel>
+                <TextField
+                  type="text"
+                  labelId="country-label"
+                  value={eventData.address.country}
+                  disabled
+                />
+              </FormControl>
             </div>
 
             <div className="col">
-              <input
+              <FormControl fullWidth>
+                <InputLabel id="state-label">State</InputLabel>
+                <Select
+                  labelId="state-label"
+                  id="state"
+                  value={eventData.address.state}
+                  onChange={(e) => handleInputChange(e, "address", "state")}
+                  required
+                >
+                  <MenuItem value="">Select State</MenuItem>
+                  {stateCityData.map((stateData) => (
+                    <MenuItem key={stateData.state} value={stateData.state}>
+                      {stateData.state}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </div>
+          </div>
+
+          <div className="row mb-4">
+            <div className="col">
+              <FormControl fullWidth>
+                <InputLabel id="city-label">City</InputLabel>
+                <Select
+                  labelId="city-label"
+                  id="city"
+                  value={eventData.address.city}
+                  onChange={(e) => handleInputChange(e, "address", "city")}
+                  required
+                >
+                  <MenuItem value="">Select City</MenuItem>
+                  {stateCityData
+                    .find(
+                      (stateData) => stateData.state === eventData.address.state
+                    )
+                    ?.cities.map((city) => (
+                      <MenuItem key={city} value={city}>
+                        {city}
+                      </MenuItem>
+                    ))}
+                </Select>
+              </FormControl>
+            </div>
+
+            <div className="col">
+              <TextField
                 type="text"
-                className="form-control"
-                id="pinCode"
+                label="Pin Code"
                 value={eventData.address.pinCode}
                 onChange={(e) => handleInputChange(e, "address", "pinCode")}
                 required
+                fullWidth
               />
-              <label className="form-label" htmlFor="pinCode">
-                Pin Code
-              </label>
             </div>
           </div>
 
-          <div className="form-outline mb-4">
-            <input
-              type="text"
-              className="form-control"
-              id="landmark"
-              value={eventData.address.landmark}
-              onChange={(e) => handleInputChange(e, "address", "landmark")}
-              required
-            />
-            <label className="form-label" htmlFor="landmark">
-              Landmark
-            </label>
+          <div className="row mb-4">
+            <div className="col">
+              <TextField
+                type="text"
+                label="Landmark"
+                value={eventData.address.landmark}
+                onChange={(e) => handleInputChange(e, "address", "landmark")}
+                required
+                fullWidth
+              />
+            </div>
           </div>
 
           <div className="form-group">
@@ -321,9 +327,9 @@ const FillForm = ({ onEventAdded }) => {
                 <div key={index}>
                   <div className="row mb-4">
                     <div className="col">
-                      <input
+                      <TextField
                         type="text"
-                        className="form-control"
+                        label="Service Name"
                         placeholder="Service Name"
                         value={service.serviceName}
                         onChange={(e) =>
@@ -336,16 +342,14 @@ const FillForm = ({ onEventAdded }) => {
                           )
                         }
                         required
+                        fullWidth
                       />
-                      <label className="form-label" htmlFor="serviceName">
-                        Service Name
-                      </label>
                     </div>
 
                     <div className="col">
-                      <input
+                      <TextField
                         type="text"
-                        className="form-control"
+                        label="Price"
                         placeholder="Price"
                         value={service.price}
                         onChange={(e) =>
@@ -358,36 +362,44 @@ const FillForm = ({ onEventAdded }) => {
                           )
                         }
                         required
+                        fullWidth
                       />
-                      <label className="form-label" htmlFor="price">
-                        Price
-                      </label>
                     </div>
                   </div>
                   <div className="text-right">
-                    <button
+                    <Button
                       type="button"
-                      className="button-no"
+                      variant="outlined"
+                      color="secondary"
                       onClick={() => removeService(index)}
                     >
                       Remove Service
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )
             )}
-            <button type="button" className="button-yes" onClick={addService}>
+            <Button
+              type="button"
+              variant="outlined"
+              color="primary"
+              onClick={addService}
+            >
               Add Service
-            </button>
+            </Button>
           </div>
 
-          <button type="submit" className="button-yes">
+          <Button type="submit" variant="contained" color="primary">
             Submit
-          </button>
-          {error && <p style={{ color: "red" }}>{error}</p>}
+          </Button>
+          {error && (
+            <Typography variant="body2" style={{ color: "red" }}>
+              {error}
+            </Typography>
+          )}
         </form>
       )}
-    </div>
+    </Container>
   );
 };
 

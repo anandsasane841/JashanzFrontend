@@ -9,8 +9,24 @@ import Header from "../Header";
 import BookingForm from "./BookingForm";
 import Footer from "../Footer";
 import CustomLoader from "../CustomLoader";
-
+import { Button, Container } from "@material-ui/core";
+import {  Select, MenuItem,  makeStyles } from '@material-ui/core';
+const useStyles = makeStyles((theme) => ({
+  additionalService: {
+    // Add your custom styles here if needed
+  },
+  formControl: {
+    width: '100%', // Make the form control width 100%
+  },
+  textRight: {
+    textAlign: 'right',
+  },
+  buttonYes: {
+    // Add your custom button styles here if needed
+  },
+}));
 const ViewComponent = () => {
+  const classes = useStyles();
   const navigate = useNavigate();
   const { eventid } = useParams();
   const [event, setEvent] = useState({});
@@ -21,20 +37,20 @@ const ViewComponent = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const isLoggedIn = true;
   const [isLoading, setIsLoading] = useState(false);
-const videoRef = useRef();
+  const videoRef = useRef();
 
-const playOrPause = () => {
-  const video = videoRef.current;
-  if (video) {
-    video.paused ? video.play() : video.pause();
-    const backgroundVideo = document.getElementById("video"); // Update the ID here
-    if (backgroundVideo) {
-      backgroundVideo.paused ? backgroundVideo.play() : backgroundVideo.pause();
+  const playOrPause = () => {
+    const video = videoRef.current;
+    if (video) {
+      video.paused ? video.play() : video.pause();
+      const backgroundVideo = document.getElementById("video"); // Update the ID here
+      if (backgroundVideo) {
+        backgroundVideo.paused
+          ? backgroundVideo.play()
+          : backgroundVideo.pause();
+      }
     }
-  }
-};
-
-  
+  };
 
   useEffect(() => {
     setIsLoading(true);
@@ -100,53 +116,53 @@ const playOrPause = () => {
   };
 
   return (
-    <div>
+    <Container maxWidth="lg">
       {isLoading ? (
         <CustomLoader />
       ) : (
         <div>
-          <div className="class-divider">
+          <Container className="class-divider">
             <Header isLoggedIn={isLoggedIn} />
-          </div>
+          </Container>
           <div className="container view-component-container">
             {loading ? (
               <div className="loader"></div>
             ) : (
               <div>
-               <div className="card-body border rounded p-3  with-video-background">
-               <div className="class-divider">
-      <div className="video-background">
-        <video
-          id="video"
-          width="320"
-          height="240"
-          ref={videoRef}
-          onClick={playOrPause}
-          className="video-element"
-          loop
-        >
-          <source src={event.videoUrl} type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-      </div>
-      <div className="video-container text-center">
-        <video
-          id="original-video"
-          width="60%"
-          height="40%"
-          style={{ borderRadius: '20px' }}
-          ref={videoRef}
-          onClick={playOrPause}
-        >
-          <source src={event.videoUrl} type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-      </div>
-                  <div className="event-icon">
-                    <ImageComponent event={event} />
-                  </div>
-                  </div>
-                  <div className="event-info class-divider">
+                <div className="card-body border rounded p-3  with-video-background">
+                  <Container className="class-divider">
+                    <div className="video-background">
+                      <video
+                        id="video"
+                        width="320"
+                        height="240"
+                        ref={videoRef}
+                        onClick={playOrPause}
+                        className="video-element"
+                        loop
+                      >
+                        <source src={event.videoUrl} type="video/mp4" />
+                        Your browser does not support the video tag.
+                      </video>
+                    </div>
+                    <div className="video-container text-center">
+                      <video
+                        id="original-video"
+                        width="60%"
+                        height="40%"
+                        style={{ borderRadius: "20px" }}
+                        ref={videoRef}
+                        onClick={playOrPause}
+                      >
+                        <source src={event.videoUrl} type="video/mp4" />
+                        Your browser does not support the video tag.
+                      </video>
+                    </div>
+                    <div className="event-icon">
+                      <ImageComponent event={event} />
+                    </div>
+                  </Container>
+                  <Container className="event-info class-divider">
                     <p className="booking-text">
                       Program:{" "}
                       <span className="booking-values">{event.eventType}</span>
@@ -217,37 +233,33 @@ const playOrPause = () => {
                         </p>
                       </div>
                     )}
-                  </div>
-                  <div className="additional-service  class-divider">
-                    <label htmlFor="additionalService">
-                      Choose Additional Services:
-                    </label>
-                    <select
-                      id="additionalService"
-                      name="additionalService"
-                      value=""
-                      onChange={handleServiceChange}
-                      className="form-control bg-transparent"
-
-                    >
-                      <option value="">Select additional services</option>
-                      {event.pricingDetails?.additionalServices?.map(
-                        (service) => (
-                          <option key={service.id}  value={service.serviceName}>
-                            {service.serviceName} - ₹{service.price || "N/A"}
-                          </option>
-                        )
-                      ) || []}
-                    </select>
-                    <div className="container text-right">
-                      <button
-                        className="button-yes"
-                        onClick={calculateTotalPrice}
-                      >
-                        Calculate
-                      </button>
-                    </div>
-                  </div>
+                  </Container>
+                  <Container className={`additional-service ${classes.additionalService} class-divider`}>
+      <label htmlFor="additionalService">Choose Additional Services:</label>
+      <Select
+        id="additionalService"
+        name="additionalService"
+        value=""
+        onChange={handleServiceChange}
+        className={`form-control bg-transparent ${classes.formControl}`}
+      >
+        <MenuItem value="">Select additional services</MenuItem>
+        {event.pricingDetails?.additionalServices?.map((service) => (
+          <MenuItem key={service.id} value={service.serviceName}>
+            {service.serviceName} - ₹{service.price || 'N/A'}
+          </MenuItem>
+        )) || []}
+      </Select>
+      <Container  className="text-right">
+        <Button
+          variant="contained"
+          color="success"
+          onClick={calculateTotalPrice}
+        >
+          Calculate
+        </Button>
+      </Container>
+    </Container>
                   {event.eventType === "Disc Jockey" && (
                     <div className="alert alert-warning" role="alert">
                       In India, the engagement of DJ services necessitates
@@ -292,13 +304,13 @@ const playOrPause = () => {
             )}
           </div>
 
-          <div className="class-divider footer-section">
+          <Container className="class-divider footer-section">
             <Footer />
-          </div>
+          </Container>
         </div>
       )}
       ;
-    </div>
+    </Container>
   );
 };
 

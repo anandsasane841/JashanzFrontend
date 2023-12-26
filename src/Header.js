@@ -1,19 +1,58 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Header.css";
 import JashanService from "./service/JashanService";
+import {
+  Container,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Switch,
+  Button,
+} from "@material-ui/core";
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import MenuIcon from "@material-ui/icons/Menu";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import BusinessIcon from "@material-ui/icons/Business";
+import BookIcon from "@material-ui/icons/Book";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import MailOutlineIcon from "@material-ui/icons/MailOutline";
 
-const Header = ({ isLoggedIn, isAdmin }) => {
+const Header = ({ isLoggedIn }) => {
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleMoreClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleAdminClick = () => {
+    setAnchorEl(null);
+    navigate(`/admin`);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   const navigate = useNavigate();
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+
+  const toggleDrawer = () => {
+    setIsDrawerOpen(!isDrawerOpen);
+  };
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
     // You can save the dark mode preference to local storage here
   };
-
-  // Apply dark mode class to the body element
   if (isDarkMode) {
     document.body.classList.add("dark-mode");
   } else {
@@ -26,22 +65,51 @@ const Header = ({ isLoggedIn, isAdmin }) => {
       .then((result) => {
         localStorage.clear();
         const res = result.data.toString();
-        navigate(`/logout/${encodeURIComponent(res)}`);
+        navigate(`/logout/${encodeURIComponent(res)}`, { replace: true });
       })
       .catch((error) => {
-        navigate(`/error/${error.message}`);
+        navigate(`/error/${error.message}`, { replace: true });
       });
   };
 
+  const handleLinkClick = () => {
+    // Handle the click action, for example, opening the mail link
+    window.location.href =
+      "mailto:support@jashanz.com?subject=Query%20Regarding%20Recent%20Event:%20Let's%20Discuss";
+  };
+  const handleLinkBookingStatus = () => {
+    // Handle the click action, for example, opening the mail link
+    window.location.href = "/bookings-status";
+  };
+  const handleLinkAdmin = () => {
+    // Handle the click action, for example, opening the mail link
+    window.location.href = "/admin";
+  };
+  const handleLinkAboutus = () => {
+    // Handle the click action, for example, opening the mail link
+    window.location.href = "/aboutus";
+  };
   return (
-    <header>
-      
-      <nav class="navbar navbar-expand-lg navStyle">
+    <Container maxWidth="lg">
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
         <div>
-          <a class="brand-navbar" href="/">
-            {" "}
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={toggleDrawer}
+          >
+            <MenuIcon />
+          </IconButton>
+          <a className="brand-navbar" href="/">
             <img
-              src="https://jashanzprimary.s3.ap-south-1.amazonaws.com/jzlogo.png "
+              src="https://jashanzprimary.s3.ap-south-1.amazonaws.com/jzlogo.png"
               alt="site-logo"
               height="60px"
             />
@@ -50,68 +118,76 @@ const Header = ({ isLoggedIn, isAdmin }) => {
             Jashan<span style={{ color: "#0daefb" }}>z.com</span>
           </strong>
         </div>
-        <button
-          class="navbar-toggler"
-          data-toggle="collapse"
-          data-target="#mainMenu"
-        >
-          <span>
-            <i class="fas fa-align-right iconStyle"></i>
-          </span>
-        </button>
-        <div class="collapse navbar-collapse" id="mainMenu">
-          <ul class="navbar-nav ml-auto navList">
-            <li className="nav-item">
-              <div className="form-check form-switch">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  role="switch"
-                  id="flexSwitchCheckDefault"
-                  checked={isDarkMode}
-                  onChange={toggleDarkMode}
-                />
-              </div>
-            </li>
-
-            <li className="nav-item">
-              <a href="/aboutus">
-                <i className="fas fa-building fa-2x"></i>
-              </a>
-            </li>
-            {!localStorage.getItem("token") && (
-              <li className="nav-item">
-                <a href="/admin">
-                  <i className="fas fa-user-circle fa-2x"></i>
-                </a>
-              </li>
-            )}
-
-            {isLoggedIn && localStorage.getItem("token") && (
-              <li className="nav-item">
-                <a href="/bookings-status">
-                  <i className="fas fa-book fa-2x"></i>
-                </a>
-              </li>
-            )}
-
-            {isLoggedIn && (
-              <li className="nav-item">
-                <div onClick={handleLogout}>
-                  <i className="fas fa-sign-out-alt fa-2x"></i>
-                </div>
-              </li>
-            )}
-
-            <li class="nav-item">
-              <a href="mailto:support@jashanz.com?subject=Query%20Regarding%20Recent%20Event:%20Let's%20Discuss">
-                <button className="contact-btn">Contact</button>
-              </a>
-            </li>
-          </ul>
+        <div className="form-check form-switch">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            role="switch"
+            id="flexSwitchCheckDefault"
+            checked={isDarkMode}
+            onChange={toggleDarkMode}
+          />
         </div>
-      </nav>
-    </header>
+        {!localStorage.getItem("token") && (
+          <IconButton
+            edge="end"
+            color="inherit"
+            aria-label="more"
+            aria-controls="simple-menu"
+            aria-haspopup="true"
+            onClick={handleMoreClick}
+          >
+            <MoreVertIcon />
+          </IconButton>
+        )}
+        <Menu
+          id="simple-menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
+          <MenuItem onClick={handleAdminClick}>Admin Section</MenuItem>
+        </Menu>
+      </div>
+
+      {/* Drawer for mobile view */}
+      <Drawer anchor="left" open={isDrawerOpen} onClose={toggleDrawer}>
+        <List>
+          <ListItem button onClick={handleLinkAboutus}>
+            <ListItemIcon>
+              <BusinessIcon />
+            </ListItemIcon>
+            <ListItemText primary="About Us" />
+          </ListItem>
+
+          {isLoggedIn && localStorage.getItem("token") && (
+            <ListItem button onClick={handleLinkBookingStatus}>
+              <ListItemIcon>
+                <BookIcon />
+              </ListItemIcon>
+              <ListItemText primary="Bookings Status" />
+            </ListItem>
+          )}
+
+          {isLoggedIn && (
+            <ListItem button onClick={handleLogout}>
+              <ListItemIcon>
+                <ExitToAppIcon />
+              </ListItemIcon>
+              <ListItemText primary="Logout" />
+            </ListItem>
+          )}
+
+          <ListItem button onClick={handleLinkClick}>
+            <ListItemIcon>
+              <MailOutlineIcon />
+            </ListItemIcon>
+            <ListItemText primary="Contact" />
+          </ListItem>
+        </List>
+      </Drawer>
+    </Container>
   );
 };
 

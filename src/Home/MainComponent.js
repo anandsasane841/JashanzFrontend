@@ -8,6 +8,7 @@ import Header from "../Header";
 import "./MainComponent.css";
 import Typed from "react-typed";
 import CustomLoader from "../CustomLoader";
+import { Button, Grid, Container } from "@material-ui/core";
 
 const MainComponent = () => {
   const [events, setEvents] = useState([]);
@@ -114,19 +115,19 @@ const MainComponent = () => {
   };
 
   return (
-    <div>
-      <div className="class-divider">
+    <Container>
+      <Container className="class-divider">
         <Header isLoggedIn={isLoggedIn} />
-      </div>
+      </Container>
 
-      <div className="class-divider ligne">
+      <Container maxWidth="lg">
         <div className="container">
           <h5 className="text-center">
             <Typed strings={sentences} typeSpeed={70} backSpeed={50} loop />
           </h5>
 
           <div className="row">
-            <div className="row class-divider filter-component">
+            <div className="row section-divider filter-component">
               <div className="overflow-auto">
                 <FilterComponent
                   selectedFilter={selectedFilter}
@@ -135,35 +136,53 @@ const MainComponent = () => {
                 />
               </div>
             </div>
-
-            <div className="text-center">
-              <div className="col-md-12 d-flex justify-content-between">
-                <button
-                  className="btn btn-info"
+            <div className="mb-3 mt-3">
+            <Grid container spacing={5} justifyContent="center">
+              <Grid item xs={6} sm={3}>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="primary"
                   onClick={() => sortEvents("type")}
                 >
                   Sort by Type
-                </button>
-                <button
-                  className="btn btn-info"
+                </Button>
+              </Grid>
+              <Grid item xs={6} sm={3}>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="primary"
                   onClick={() => sortEvents("price")}
                 >
                   Sort by Price
-                </button>
-                <button
-                  className="btn btn-info"
+                </Button>
+              </Grid>
+              <Grid item xs={6} sm={3}>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="primary"
                   onClick={() => sortEvents("place")}
                 >
                   Sort by Place
-                </button>
-                <button className="btn btn-danger" onClick={handleReset}>
+                </Button>
+              </Grid>
+              <Grid item xs={6} sm={3}>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="secondary"
+                  onClick={handleReset}
+                >
                   Reset Filter
-                </button>
-              </div>
+                </Button>
+              </Grid>
+            </Grid>
             </div>
 
-            <div className="row class-divider">
-              <div className="row mb-4">
+            <div className="row section-divider">
+              <div className="row mt-3">
                 <div className="col">
                   <select
                     className="form-select"
@@ -243,12 +262,12 @@ const MainComponent = () => {
             </div>
           </div>
         </div>
-      </div>
+      </Container>
 
-      <div className="class-divider footer-section">
+      <Container maxWidth="lg" className="class-divider">
         <Footer />
-      </div>
-    </div>
+      </Container>
+    </Container>
   );
 };
 

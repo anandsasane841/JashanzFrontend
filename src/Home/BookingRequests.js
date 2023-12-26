@@ -1,4 +1,13 @@
 import React, { useState, useEffect } from "react";
+import {
+  Grid,
+  Typography,
+  Select,
+  MenuItem,
+  TextField,
+  Card,
+  CardContent,
+} from "@material-ui/core";
 import "./BookingRequests.css";
 import Header from "../Header";
 import Footer from "../Footer";
@@ -57,49 +66,54 @@ const BookingRequests = () => {
         <Header isLoggedIn={isLoggedIn} />
       </div>
       <div className="container">
-        <h3 className="text-center text-dark booking-heading mb-4">Booking Console📋</h3>
+        <Typography variant="h5" align="center" className="booking-heading mb-4">
+          Booking Console📋
+        </Typography>
 
-        <div className="row mb-4">
-          <div className="col-md-4">
-            <select
-              className="form-select"
+        <Grid container spacing={4} alignItems="center">
+          <Grid item xs={12} md={4}>
+            <Select
+              fullWidth
+              variant="outlined"
               value={filters.bookingStatus}
               onChange={(e) =>
                 setFilters({ ...filters, bookingStatus: e.target.value })
               }
             >
-              <option value="">Filter by Booking Status</option>
-              <option value="Accepted">ACCEPTED</option>
-              <option value="Rejected">REJECTED</option>
-              <option value="Rejected">PENDING</option>
-            </select>
-          </div>
-          <div className="col-md-4">
-            <input
+              <MenuItem value="">Filter by Booking Status</MenuItem>
+              <MenuItem value="ACCEPTED">Accepted</MenuItem>
+              <MenuItem value="REJECTED">Rejected</MenuItem>
+              <MenuItem value="PENDING">Pending</MenuItem>
+            </Select>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <TextField
+              fullWidth
               type="date"
-              className="form-control"
+              variant="outlined"
               placeholder="Filter by Booking Date"
               value={filters.bookingDate}
               onChange={(e) =>
                 setFilters({ ...filters, bookingDate: e.target.value })
               }
             />
-          </div>
-          <div className="col-md-4">
-            <input
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <TextField
+              fullWidth
               type="text"
-              className="form-control"
+              variant="outlined"
               placeholder="Filter by Program Name"
               value={filters.event}
               onChange={(e) => setFilters({ ...filters, event: e.target.value })}
             />
-          </div>
-        </div>
+          </Grid>
+        </Grid>
 
-        <div className="row">
+        <Grid container spacing={4}>
           {filteredBookings.length > 0 ? (
             filteredBookings.map((booking, index) => (
-              <div className="col-12 col-md-6" key={index}>
+              <Grid item xs={12} md={6} key={index}>
                 <div className="card mb-4">
                   <div className="text-center pt-4 pb-4">
                     <p className="card-text booking-text">
@@ -163,14 +177,15 @@ const BookingRequests = () => {
                 )}
                   </div>
                 </div>
-              </div>
+             
+              </Grid>
             ))
           ) : (
-            <p className="text-muted booking-text">
+            <Typography variant="body1" className="text-right booking-text">
               No bookings found matching the selected filters.
-            </p>
+            </Typography>
           )}
-        </div>
+        </Grid>
       </div>
       <div className="class-divider ">
         <Footer />

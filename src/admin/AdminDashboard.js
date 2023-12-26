@@ -7,6 +7,7 @@ import {
   faComments,
   faPen,
 } from "@fortawesome/free-solid-svg-icons";
+import { Tabs, Tab } from "@material-ui/core";
 import AdminInfo from "./dashboardsections/AdminInfo";
 import EventInfo from "./dashboardsections/EventInfo";
 import CustomerInteraction from "./dashboardsections/CustomerInteraction";
@@ -61,122 +62,87 @@ const AdminDashboard = () => {
       </div>
 
       <div className="container mt-4 text-center">
-        <div>
-          <ul className="nav nav-tabs" id="myTab" role="tablist">
-            <li className="nav-item fs-5" role="presentation">
-              <button
-                className={`nav-link ${activeTab === "admin" ? "active" : ""}`}
-                onClick={() => switchTab("admin")}
-                id="admin-tab"
-                data-bs-toggle="tab"
-                data-bs-target="#admin"
-                type="button"
-                role="tab"
-                aria-controls="admin"
-                aria-selected="true"
-              >
+        <Tabs
+          value={activeTab}
+          onChange={(e, value) => switchTab(value)}
+          centered
+        >
+          <Tab
+            label={
+              <div>
                 <FontAwesomeIcon icon={faUser} className="fs-5" />
                 <p className="dashboard-tabs-headings"> Personal Info</p>
-              </button>
-            </li>
-            <li className="nav-item fs-5" role="presentation">
-              <button
-                className={`nav-link ${activeTab === "events" ? "active" : ""}`}
-                onClick={() => switchTab("events")}
-                id="events-tab"
-                data-bs-toggle="tab"
-                data-bs-target="#events"
-                type="button"
-                role="tab"
-                aria-controls="events"
-                aria-selected="false"
-              >
-                <FontAwesomeIcon icon={faCalendar} className="fs-5" />{" "}
+              </div>
+            }
+            value="admin"
+          />
+          <Tab
+            label={
+              <div>
+                <FontAwesomeIcon icon={faCalendar} className="fs-5" />
                 <p className="dashboard-tabs-headings">Event Info</p>
-              </button>
-            </li>
-            <li className="nav-item fs-5" role="presentation">
-              <button
-                className={`nav-link ${
-                  activeTab === "interaction" ? "active" : ""
-                }`}
-                onClick={() => switchTab("interaction")}
-                id="interaction-tab"
-                data-bs-toggle="tab"
-                data-bs-target="#interaction"
-                type="button"
-                role="tab"
-                aria-controls="interaction"
-                aria-selected="false"
-              >
-                <FontAwesomeIcon icon={faComments} className="fs-5" />{" "}
+              </div>
+            }
+            value="events"
+          />
+          <Tab
+            label={
+              <div>
+                <FontAwesomeIcon icon={faComments} className="fs-5" />
                 <p className="dashboard-tabs-headings">Customer Interaction</p>
-              </button>
-            </li>
-            <li className="nav-item fs-5" role="presentation">
-              <button
-                className={`nav-link ${activeTab === "form" ? "active" : ""}`}
-                onClick={() => switchTab("form")}
-                id="form-tab"
-                data-bs-toggle="tab"
-                data-bs-target="#form"
-                type="button"
-                role="tab"
-                aria-controls="form"
-                aria-selected="false"
-              >
+              </div>
+            }
+            value="interaction"
+          />
+          <Tab
+            label={
+              <div>
                 <FontAwesomeIcon icon={faPen} className="fs-5" />
                 <p className="dashboard-tabs-headings">Fill Form</p>
-              </button>
-            </li>{" "}
-          </ul>
+              </div>
+            }
+            value="form"
+          />
+        </Tabs>
 
+        <div className="tab-content class-divider bg-white text-dark">
           <div
-            className="tab-content class-divider bg-white text-dark"
-            id="myTabContent"
+            className={`tab-pane fade ${
+              activeTab === "admin" ? "show active" : ""
+            }`}
+            id="admin"
+            role="tabpanel"
           >
-            <div
-              className={`tab-pane fade ${
-                activeTab === "admin" ? "show active" : ""
-              }`}
-              id="admin"
-              role="tabpanel"
-              aria-labelledby="admin-tab"
-            >
-              <AdminInfo adminInfo={adminInfo} />
-            </div>
-            <div
-              className={`tab-pane fade ${
-                activeTab === "events" ? "show active" : ""
-              }`}
-              id="events"
-              role="tabpanel"
-              aria-labelledby="events-tab"
-            >
-              {events.map((event) => (
-                <EventInfo key={event.id} event={event} />
-              ))}
-            </div>
-            <div
-              className={`tab-pane fade ${
-                activeTab === "interaction" ? "show active" : ""
-              }`}
-              id="interaction"
-              role="tabpanel"
-              aria-labelledby="interaction-tab"
-            >
-              <CustomerInteraction />
-            </div>
-            <div
-              className={`tab-pane fade ${
-                activeTab === "form" ? "show active" : ""
-              }`}
-              id="form"
-              role="tabpanel"
-              aria-labelledby="form-tab"
-            >
-              <FillForm onEventAdded={addEvent} />
-            </div>
+            <AdminInfo adminInfo={adminInfo} />
+          </div>
+          <div
+            className={`tab-pane fade ${
+              activeTab === "events" ? "show active" : ""
+            }`}
+            id="events"
+            role="tabpanel"
+          >
+            {events.map((event) => (
+              <EventInfo key={event.id} event={event} />
+            ))}
+          </div>
+          <div
+            className={`tab-pane fade ${
+              activeTab === "interaction" ? "show active" : ""
+            }`}
+            id="interaction"
+            role="tabpanel"
+          >
+            <CustomerInteraction />
+          </div>
+          <div
+            className={`tab-pane fade ${
+              activeTab === "form" ? "show active" : ""
+            }`}
+            id="form"
+            role="tabpanel"
+          >
+            <FillForm onEventAdded={addEvent} />
           </div>
         </div>
       </div>
