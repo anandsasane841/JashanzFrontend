@@ -1,23 +1,30 @@
 import React, { useState, useEffect } from "react";
-import "./CustomerInteraction.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
+import {
+  Paper,
+  Container,
+  Grid,
+  TextField,
+  Button,
+  Typography,
+} from "@mui/material";
+import { Check, Clear } from "@mui/icons-material";
 import JashanService from "../../service/JashanService";
+import "./CustomerInteraction.css";
 
 const CustomerInteraction = () => {
   const [bookingData, setBookingData] = useState([]);
-  const [adminId, setAdminId] = useState(null);
   const [acceptDisabled, setAcceptDisabled] = useState(false);
   const [rejectDisabled, setRejectDisabled] = useState(false);
   const [filters, setFilters] = useState({
-    bookingDate: "", // Initial state for the date filter
+    bookingDate: "",
   });
+  const [statusFilter, setStatusFilter] = useState("");
+  const [bookingMessages, setBookingMessages] = useState({});
 
   useEffect(() => {
     const token = localStorage.getItem("admin-token");
     JashanService.get_current_admin(token)
       .then((response) => {
-        setAdminId(response.data.id);
         return JashanService.customer_booking_requests(response.data.id, token);
       })
       .then((res) => {
@@ -28,10 +35,7 @@ const CustomerInteraction = () => {
       });
   }, []);
 
-  const [bookingMessages, setBookingMessages] = useState({});
-
   const handleAccept = (bookingId) => {
-   
     setAcceptDisabled(true);
     setRejectDisabled(true);
     const successMessage = "You have successfully ACCEPTED Booking";
@@ -63,151 +67,155 @@ const CustomerInteraction = () => {
     const token = localStorage.getItem("admin-token");
 
     JashanService.rejectBooking(bookingId, token)
-    .then((res) => {
-      console.log(res);
-    
+      .then((res) => {
+        console.log(res);
+        setBookingMessages((prevMessages) => ({
+          ...prevMessages,
+          [bookingId]: {
+            message: errorMessage,
+            color: "red",
+          },
+        }));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
-    
-
-      // Set the state to trigger the rendering of PaymentRefund
-      setBookingMessages((prevMessages) => ({
-        ...prevMessages,
-        [bookingId]: {
-          message: errorMessage,
-          color: "red",
-        },
-      }));
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-   };
   const filteredBookingData = bookingData.filter((booking) => {
     return (
-      !filters.bookingDate ||
-      new Date(booking.bookingDate).toDateString() ===
-        new Date(filters.bookingDate).toDateString()
+      (!filters.bookingDate ||
+        new Date(booking.bookingDate).toDateString() ===
+          new Date(filters.bookingDate).toDateString()) &&
+      (!statusFilter || booking.bookingStatus === statusFilter)
     );
   });
-  return (
-    <div className="container fs-5">
-       <div className="row mb-4">
-        <div className="col">
-          <input
-            type="date"
-            className="form-control"
-            placeholder="Filter by Booking Date"
-            value={filters.bookingDate}
-            onChange={(e) =>
-              setFilters({ ...filters, bookingDate: e.target.value })
-            }
-          />
-        </div>
-      </div>
-      <div className="row">
-      {filteredBookingData.length > 0 ? (
-        filteredBookingData.map((booking) => (
-          <div
-            key={booking.id}
-            className="col-12 col-md-5  messages__item messages__item--operator mt-3"
-          >
-                <div className="alert alert-light">
-                  <div>
-                    <p className="booking-text">
-                      <strong>Customer ID:</strong>{" "}
-                      <span className="booking-values">{booking.id}</span>
-                    </p>
-                  </div>
 
-                  
-                  <div>
-                    <p className="booking-text">
-                      <strong>Additional Services:</strong>{" "}
-                      <span className="booking-values">
-                        {booking.additionalServices}
-                      </span>
+  return (
+    <Paper  style={{ backgroundColor: '#f0f3f5', }}>
+    <Container component="main" maxWidth="md">
+        <Grid container spacing={2} justifyContent="center" alignItems="center">
+          <Grid item xs={12} sm={6}>
+            <TextField
+              className="mb-2"
+              type="date"
+              fullWidth
+              InputLabelProps={{
+                shrink: true,
+              }}
+              value={filters.bookingDate}
+              onChange={(e) =>
+                setFilters({ ...filters, bookingDate: e.target.value })
+              }
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              className="mb-2"
+              select
+              fullWidth
+              label="Booking Status"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              SelectProps={{
+                native: true,
+              }}
+            >
+              <option value="">All</option>
+              <option value="ACCEPTED">Accepted</option>
+              <option value="REJECTED">Rejected</option>
+              <option value="PENDING">Pending</option>
+            </TextField>
+          </Grid>
+        </Grid>
+
+        
+        <div className="chat-container">
+          {filteredBookingData.length > 0 ? (
+            filteredBookingData.map((booking) => (
+              <div
+                key={booking.id}
+                className={`chat-message ${
+                  booking.bookingStatus === "ACCEPTED"
+                    ? "accepted"
+                    : booking.bookingStatus === "REJECTED"
+                    ? "rejected"
+                    : "pending"
+                }`}
+              >
+                <div className="message-content">
+                  <p className="message-inside-content">
+                    {" "}
+                    Customer ID: {booking.id}
+                  </p>
+                  <p className="message-inside-content">
+                    Additional Services: {booking.additionalServices}
+                  </p>
+                  <p className="message-inside-content">
+                    {" "}
+                    Booking Date: {booking.bookingDate}
+                  </p>
+
+                  {booking.bookingStatus === "ACCEPTED" && (
+                    <p className="message-inside-content">
+                      Contact Number: {booking.customerContactNumber}
                     </p>
-                  </div>
-                  <div>
-                    <p className="booking-text">
-                      <strong>Total Amount (with GST):</strong>{" "}
-                      <span className="booking-values">
-                        {booking.bookingAmount}
-                      </span>
-                    </p>
-                  </div>
-                  <div>
-                    <p className="booking-text">
-                      <strong>Booking Date:</strong>{" "}
-                      <span className="booking-values">
-                        {booking.bookingDate}
-                      </span>
-                    </p>
-                  </div>
-                 
-                 {booking.bookingStatus === "ACCEPTED" && (
-                  <div>
-                    <p className="booking-text">
-                      <strong>Contact Number:</strong>{" "}
-                      <span className="booking-values text-dark">
-                        {booking.customerContactNumber}
-                      </span>
-                    </p>
-                  </div>
-                )}
-                  
-                  <div>
-                    <p className="booking-text">
-                      <strong>Booking Time:</strong>{" "}
-                      <span className="booking-values">
-                        {booking.bookingTime}
-                      </span>
-                    </p>
-                  </div>
+                  )}
+
+                  <p className="message-inside-content">
+                    Booking Time: {booking.bookingTime}
+                  </p>
 
                   {bookingMessages[booking.id] && (
-                    <div className="mt-2">
-                      <p style={{ color: bookingMessages[booking.id].color }}>
-                        {bookingMessages[booking.id].message}
-                      </p>
-                    </div>
+                    <Typography
+                      style={{ color: bookingMessages[booking.id].color }}
+                    >
+                      {bookingMessages[booking.id].message}
+                    </Typography>
                   )}
-                </div>
-                <div className="action-buttons pb-3">
-                  {booking.bookingStatus === "ACCEPTED" ? (
-                    <p className="fs-3 text-dark">
-                      This request is already Accepted
-                    </p>
-                  ) : booking.bookingStatus === "REJECTED" ? (
-                    <p className="fs-3 text-danger">
-                      This request is already Rejected
-                    </p>
-                  ) : (
-                    <div>
-                      <button
-                        className="btn btn-success accept-button"
-                        onClick={() => handleAccept(booking.id)}
-                        disabled={acceptDisabled}
-                      >
-                        <FontAwesomeIcon icon={faCheck} /> Accept
-                      </button>
-                      <button
-                        className="btn btn-danger reject-button ml-5"
-                        onClick={() => handleReject(booking.id)}
-                        disabled={rejectDisabled}
-                      >
-                        <FontAwesomeIcon icon={faTimes} /> Reject
-                      </button>
-                    </div>
-                  )}
+
+                  <div className="action-buttons">
+                    {booking.bookingStatus === "ACCEPTED" ? (
+                      <Typography variant="h6" color="primary">
+                        Booking has been confirmed.
+                      </Typography>
+                    ) : booking.bookingStatus === "REJECTED" ? (
+                      <Typography variant="h6" color="error">
+                        Booking has been declined.
+                      </Typography>
+                    ) : (
+                      <div>
+                        <Button
+                          variant="contained"
+                          color="success"
+                          onClick={() => handleAccept(booking.id)}
+                          disabled={acceptDisabled}
+                          style={{ marginRight: "10px" }}
+                        >
+                          <Check /> Accept
+                        </Button>
+                        <Button
+                          variant="contained"
+                          color="error"
+                          onClick={() => handleReject(booking.id)}
+                          disabled={rejectDisabled}
+                        >
+                          <Clear /> Reject
+                        </Button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-          ))
+            ))
           ) : (
-            <p className="fs-3 text-dark">No matching requests for the selected date</p>
+            <Typography variant="h6" color="textPrimary">
+              No matching requests for the selected date and status
+            </Typography>
           )}
-          </div>
-    </div>
+        </div>
+      </Container>
+    </Paper>
   );
 };
 

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './CustomLoader.css'; // Import your CSS file
-
+import './CustomLoader.css'
 function CustomLoader() {
   const [isLoading, setIsLoading] = useState(true);
 
@@ -11,12 +10,14 @@ function CustomLoader() {
   }, []);
 
   return (
-    <div className="centered-container">
+    <div className="flex-center">
       {isLoading ? (
-        <div className="loader">
+        <div className="text-center">
+          
+          {/* Animated logo image */}
           <img
-            className="image"
-            src="https://res.cloudinary.com/dvqxcqg2n/image/upload/v1699425006/icdhtflmuxuqafm5wxht.png"
+            className="custom-image"
+            src="https://jashanzprimary.s3.ap-south-1.amazonaws.com/JashanzLogo.png"
             alt="logo-loader"
           />
         </div>

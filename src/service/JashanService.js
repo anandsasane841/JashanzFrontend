@@ -1,16 +1,21 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://jashanzapp-env.eba-3virwd3j.ap-south-1.elasticbeanstalk.com:8080";
-
+const API_BASE_URL = "http://jashanzserver-env.eba-vmdqpy3p.ap-south-1.elasticbeanstalk.com"
+//http://jashanzapp-env.eba-3virwd3j.ap-south-1.elasticbeanstalk.com:8080"
 const endpoints = {
   GET_USER_OTP: "/api/generateUserOtp/",
   GET_ADMIN_OTP: "/api/generateAdminOtp/",
   CUSTOMER_REGISTRATION: "/api/customers/register/",
   CUSTOMER_LOGIN: "/api/customers/login",
   CUSTOMER_LOGOUT: "/auth/logout",
-  GENERATE_RESET_PASSWORD_OTP_PATH :"api/generateResetPasswordOtp/",
-  VERIFY_RESET_PASSWORD_OTP_PATH : "api/verifyResetPasswordOtp/",
-  UPDATE_PASSWORD_PATH :"api/updatePassword/",
+  GENERATE_RESET_PASSWORD_OTP_PATH :"api/generateUserForgotPasswordOtp/",
+  VERIFY_RESET_PASSWORD_OTP_PATH : "api/verifyUserForgotPasswordOtp/",
+  UPDATE_PASSWORD_PATH :"api/updateUserPassword/",
+
+  GENERATE_ADMIN_RESET_PASSWORD_OTP_PATH :"api/generateResetPasswordOtp/",
+  VERIFY_ADMIN_RESET_PASSWORD_OTP_PATH : "api/verifyResetPasswordOtp/",
+  UPDATE_ADMIN_PASSWORD_PATH :"api/updatePassword/",
+
   LOGOUT_COMPLETED: "/api/logout-success",
   ADMIN_REGISTRATION: "/api/admin/register/",
   ADMIN_LOGIN: "/api/admin/login",
@@ -51,19 +56,31 @@ class JashanService {
   generateAdminOtp(mobileNumber) {
     return this.axiosInstance.get(`${endpoints.GET_ADMIN_OTP}${mobileNumber}`);
   }
-/*
-  checkEmailOrMobileForForgotPassword(emailOrMobile) {
-    return this.axiosInstance.get(`GENERATE_RESET_PASSWORD_OTP_PATH${emailOrMobile}`);
+
+  userForgotPassword(mobileNumber) {
+    return this.axiosInstance.get(`${endpoints.GENERATE_RESET_PASSWORD_OTP_PATH}${mobileNumber}`);
   }
 
-  verifyOtpForForgotPassword(emailOrMobile, otp) {
-    return this.axiosInstance.get(`VERIFY_RESET_PASSWORD_OTP_PATH${emailOrMobile}/${otp}`);
+  userVerifyOtpForForgotPassword(mobileNumber, otp) {
+    return this.axiosInstance.get(`${endpoints.VERIFY_RESET_PASSWORD_OTP_PATH}${mobileNumber}/${otp}`);
   }
 
-  updatePassword(emailOrMobile, newPassword) {
-    return this.axiosInstance.post(`UPDATE_PASSWORD_PATH${emailOrMobile}/${newPassword}`);
+  userUpdatePassword(mobileNumber, newPassword) {
+    return this.axiosInstance.post(`${endpoints.UPDATE_PASSWORD_PATH}${mobileNumber}/${newPassword}`);
   }
-*/
+
+  adminForgotPassword(mobileNumber) {
+    return this.axiosInstance.get(`${endpoints.GENERATE_ADMIN_RESET_PASSWORD_OTP_PATH}${mobileNumber}`);
+  }
+
+  adminVerifyOtpForForgotPassword(mobileNumber, otp) {
+    return this.axiosInstance.get(`${endpoints.VERIFY_ADMIN_RESET_PASSWORD_OTP_PATH}${mobileNumber}/${otp}`);
+  }
+
+  adminUpdatePassword(mobileNumber, newPassword) {
+    return this.axiosInstance.post(`${endpoints.UPDATE_ADMIN_PASSWORD_PATH}${mobileNumber}/${newPassword}`);
+  }
+
   get_current_user(token) {
     return this.axiosInstance.get(endpoints.CURRENT_CUSTOMER, {
       headers: {

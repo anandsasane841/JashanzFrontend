@@ -9,24 +9,19 @@ import Header from "../Header";
 import BookingForm from "./BookingForm";
 import Footer from "../Footer";
 import CustomLoader from "../CustomLoader";
-import { Button, Container } from "@material-ui/core";
-import {  Select, MenuItem,  makeStyles } from '@material-ui/core';
-const useStyles = makeStyles((theme) => ({
-  additionalService: {
-    // Add your custom styles here if needed
-  },
-  formControl: {
-    width: '100%', // Make the form control width 100%
-  },
-  textRight: {
-    textAlign: 'right',
-  },
-  buttonYes: {
-    // Add your custom button styles here if needed
-  },
-}));
+import {
+  AppBar,
+  Alert,
+  AlertTitle,
+  Typography,
+  Button,
+  Container,
+  Select,
+  MenuItem,
+  Grid,
+} from "@mui/material";
+
 const ViewComponent = () => {
-  const classes = useStyles();
   const navigate = useNavigate();
   const { eventid } = useParams();
   const [event, setEvent] = useState({});
@@ -116,201 +111,275 @@ const ViewComponent = () => {
   };
 
   return (
-    <Container maxWidth="lg">
-      {isLoading ? (
-        <CustomLoader />
-      ) : (
-        <div>
-          <Container className="class-divider">
-            <Header isLoggedIn={isLoggedIn} />
-          </Container>
-          <div className="container view-component-container">
-            {loading ? (
-              <div className="loader"></div>
-            ) : (
-              <div>
-                <div className="card-body border rounded p-3  with-video-background">
-                  <Container className="class-divider">
-                    <div className="video-background">
-                      <video
-                        id="video"
-                        width="320"
-                        height="240"
-                        ref={videoRef}
-                        onClick={playOrPause}
-                        className="video-element"
-                        loop
-                      >
-                        <source src={event.videoUrl} type="video/mp4" />
-                        Your browser does not support the video tag.
-                      </video>
-                    </div>
-                    <div className="video-container text-center">
-                      <video
-                        id="original-video"
-                        width="60%"
-                        height="40%"
-                        style={{ borderRadius: "20px" }}
-                        ref={videoRef}
-                        onClick={playOrPause}
-                      >
-                        <source src={event.videoUrl} type="video/mp4" />
-                        Your browser does not support the video tag.
-                      </video>
-                    </div>
-                    <div className="event-icon">
-                      <ImageComponent event={event} />
-                    </div>
-                  </Container>
-                  <Container className="event-info class-divider">
-                    <p className="booking-text">
-                      Program:{" "}
-                      <span className="booking-values">{event.eventType}</span>
-                    </p>
-                    <p className="booking-text">
-                      Base Price:{" "}
-                      <span className="booking-values">
-                        ₹{event.pricingDetails?.basePrice || "N/A"}
-                      </span>
-                    </p>
-
-                    <p className="booking-text">
-                      State:{" "}
-                      <span className="booking-values">
-                        {event.address?.state || "N/A"}
-                      </span>
-                    </p>
-                    <p className="booking-text">
-                      City:{" "}
-                      <span className="booking-values">
-                        {event.address?.city || "N/A"}
-                      </span>
-                    </p>
-                    <p className="booking-text">
-                      {" "}
-                      PinCode:{" "}
-                      <span className="booking-values">
-                        {event.address?.pinCode || "N/A"}
-                      </span>
-                    </p>
-
-                    <p className="booking-text">
-                      Landmark:{" "}
-                      <span className="booking-values">
-                        {event.address?.landmark || "N/A"}
-                      </span>
-                    </p>
-                    {selectedServices.length > 0 && (
-                      <div className="selected-services">
-                        <p>Selected Services:</p>
-                        <ul>
-                          {selectedServices.map((service, index) => (
-                            <li key={index}>
-                              {service} - ₹
-                              {event.pricingDetails?.additionalServices.find(
-                                (s) => s.serviceName === service
-                              )?.price || "N/A"}
-                            </li>
-                          ))}
-                        </ul>
+    <div>
+        <AppBar position="static" color="default" style={{ height: '80px' }}>
+    <Header isLoggedIn={isLoggedIn} />
+</AppBar>
+      <Container maxWidth="lg" className="mt-5">
+        {isLoading ? (
+          <CustomLoader />
+        ) : (
+          <div>
+            <div className="container view-component-container">
+              {loading ? (
+                <div className="loader"></div>
+              ) : (
+                <div>
+                  <div className="card-body border rounded p-3 with-video-background">
+                    <Container>
+                      <div className="video-background">
+                        <video
+                          id="video"
+                          width="320"
+                          height="240"
+                          ref={videoRef}
+                          onClick={playOrPause}
+                          className="video-element"
+                          loop
+                        >
+                          <source src={event.videoUrl} type="video/mp4" />
+                          Your browser does not support the video tag.
+                        </video>
                       </div>
-                    )}
-                    {totalPrice > 0 && (
-                      <div>
-                        <p className="booking-text">
-                          Total Price:{" "}
-                          <span className="booking-values">₹{totalPrice}</span>
-                        </p>
-                        <p className="booking-text">
-                          GST (18%):{" "}
-                          <span className="booking-values">₹{gst}</span>
-                        </p>
-                        <p className="text-dark booking-values">
-                          Grand Total:{" "}
-                          <span className="text-light booking-values">
-                            ₹{totalPrice + gst}
-                          </span>
-                        </p>
+                      <div className="video-container text-center mt-3">
+                        <video
+                          id="original-video"
+                          ref={videoRef}
+                          onClick={playOrPause}
+                        >
+                          <source src={event.videoUrl} type="video/mp4" />
+                          Your browser does not support the video tag.
+                        </video>
                       </div>
-                    )}
-                  </Container>
-                  <Container className={`additional-service ${classes.additionalService} class-divider`}>
-      <label htmlFor="additionalService">Choose Additional Services:</label>
-      <Select
-        id="additionalService"
-        name="additionalService"
-        value=""
-        onChange={handleServiceChange}
-        className={`form-control bg-transparent ${classes.formControl}`}
-      >
-        <MenuItem value="">Select additional services</MenuItem>
-        {event.pricingDetails?.additionalServices?.map((service) => (
-          <MenuItem key={service.id} value={service.serviceName}>
-            {service.serviceName} - ₹{service.price || 'N/A'}
-          </MenuItem>
-        )) || []}
-      </Select>
-      <Container  className="text-right">
-        <Button
-          variant="contained"
-          color="success"
-          onClick={calculateTotalPrice}
-        >
-          Calculate
-        </Button>
-      </Container>
-    </Container>
-                  {event.eventType === "Disc Jockey" && (
-                    <div className="alert alert-warning" role="alert">
-                      In India, the engagement of DJ services necessitates
-                      obtaining official permission from a designated police
-                      officer.In industrial areas, the permissible limit is 75
-                      dB for daytime and 70 dB at night. In commercial areas, it
-                      is 65 dB and 55 dB, while in residential areas it is 55 dB
-                      and 45 dB during daytime and night respectively.
-                      Therefore, day time noise standard prescribed for
-                      residential areas in India is 55 dB.
-                    </div>
-                  )}
-                  <div className="container text-center">
-                    <button
-                      type="button"
-                      className="button-yes"
-                      onClick={handleBook}
+                      <div className="video-container mt-3">
+                        <ImageComponent event={event} />
+                      </div>
+                    </Container>
+                    <Container
+                      className="event-info text-center mt-3"
+                      style={{
+                        background: "rgba(0, 0, 0, 0.1)",
+                        padding: "20px",
+                        borderRadius: "10px",
+                        color: "white",
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                      }}
                     >
-                      Book
-                    </button>
-                    {isModalOpen && (
-                      <div class="modal-dialog">
-                        <div className="modal-overlay">
-                          <div className="modal-content">
-                            <span className="modal-close" onClick={closeModal}>
-                              &times;
+                      <Grid container spacing={2} >
+                        <Grid item xs={12} sm={6}>
+                          <p className="booking-text text-light">
+                            Program:{" "}
+                            <span className="booking-values text-white">
+                              {event.eventType}
                             </span>
-                            <BookingForm
-                              selectedServices={selectedServices}
-                              event={event}
-                              totalPrice={totalPrice}
-                              gst={gst}
-                              onModalClose={closeModal}
-                            />
+                          </p>
+                          <p className="booking-text text-light">
+                            Base Price:{" "}
+                            <span className="booking-values text-white">
+                              ₹{event.pricingDetails?.basePrice || "N/A"}
+                            </span>
+                          </p>
+                          <p className="booking-text text-light">
+                            State:{" "}
+                            <span className="booking-values text-white">
+                              {event.address?.state || "N/A"}
+                            </span>
+                          </p>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <p className="booking-text text-light">
+                            City:{" "}
+                            <span className="booking-values text-white">
+                              {event.address?.city || "N/A"}
+                            </span>
+                          </p>
+                          <p className="booking-text text-light">
+                            PinCode:{" "}
+                            <span className="booking-values text-white">
+                              {event.address?.pinCode || "N/A"}
+                            </span>
+                          </p>
+                          <p className="booking-text text-light">
+                            Landmark:{" "}
+                            <span className="booking-values text-white">
+                              {event.address?.landmark || "N/A"}
+                            </span>
+                          </p>
+                        </Grid>
+                        {selectedServices.length > 0 && (
+                          <Grid item xs={12}>
+                            <div className="selected-services">
+                              <Typography
+                                variant="h6"
+                                style={{
+                                  fontWeight: "bold",
+                                  marginBottom: "10px",
+                                }}
+                              >
+                                Selected Services:
+                              </Typography>
+                              <div className="booking-text">
+                                <ul
+                                  style={{
+                                    listStyleType: "disc",
+                                    paddingLeft: "20px",
+                                  }}
+                                >
+                                  {selectedServices.map((service, index) => (
+                                    <li key={index} className="text-white">
+                                      {service} - ₹
+                                      {event.pricingDetails?.additionalServices.find(
+                                        (s) => s.serviceName === service
+                                      )?.price || "N/A"}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            </div>
+                          </Grid>
+                        )}
+
+                        {totalPrice > 0 && (
+                          <Grid item xs={12}>
+                            <div>
+                              <Typography variant="h6" className="booking-text text-light">
+                                Total Price:{" "}
+                                <span className="booking-values text-white">
+                                  ₹{totalPrice}
+                                </span>
+                              </Typography>
+                              <Typography variant="h6" className="booking-text text-light">
+                                GST (18%):{" "}
+                                <span className="booking-values text-white">₹{gst}</span>
+                              </Typography>
+                              <Typography
+                                variant="h5"
+                                className="booking-values text-light"
+                              >
+                                Grand Total:{" "}
+                                <span className="booking-values text-white">
+                                  ₹{totalPrice + gst}
+                                </span>
+                              </Typography>
+                            </div>
+                          </Grid>
+                        )}
+                      </Grid>
+                      <Grid
+                        container
+                        spacing={2}
+                        className={`additional-service`}
+                      >
+                        <Grid item xs={12}>
+                          <Typography
+                            variant="subtitle1"
+                            component="label"
+                            htmlFor="additionalService"
+                            style={{
+                              color: "white",
+                              marginTop: "10px",
+                              display: "block",
+                            }}
+                          >
+                            Choose Additional Services:
+                          </Typography>
+
+                          <Select
+                            id="additionalService"
+                            name="additionalService"
+                            value=""
+                            onChange={handleServiceChange}
+                            className={`form-control bg-transparent`}
+                          >
+                            <MenuItem value="" style={{ color: "black" }}>
+                              Select additional services
+                            </MenuItem>
+                            {event.pricingDetails?.additionalServices?.map(
+                              (service) => (
+                                <MenuItem
+                                  key={service.id}
+                                  value={service.serviceName}
+                                  style={{ color: "black" }}
+                                >
+                                  {service.serviceName} - ₹
+                                  {service.price || "N/A"}
+                                </MenuItem>
+                              )
+                            ) || []}
+                          </Select>
+                        </Grid>
+                        <Grid item xs={12} className="text-right">
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            style={{ backgroundColor: "#0daefb" }}
+                            onClick={calculateTotalPrice}
+                          >
+                            Calculate
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </Container>
+
+                    <Container>
+                      {event.eventType === "Disc Jockey" && (
+                        <Alert severity="warning" style={{ margin: "16px" }}>
+                          <AlertTitle>Attention</AlertTitle> In India, the
+                          engagement of DJ services necessitates obtaining
+                          official permission from a designated police
+                          officer.In industrial areas, the permissible limit is
+                          75 dB for daytime and 70 dB at night. In commercial
+                          areas, it is 65 dB and 55 dB, while in residential
+                          areas it is 55 dB and 45 dB during daytime and night
+                          respectively. Therefore, day time noise standard
+                          prescribed for residential areas in India is 55 dB.
+                        </Alert>
+                      )}
+                    </Container>
+                    <div className="container text-center">
+                      <button
+                        type="button"
+                        className="button-yes"
+                        onClick={handleBook}
+                      >
+                        Book
+                      </button>
+                      {isModalOpen && (
+                        <div class="modal-dialog">
+                          <div className="modal-overlay">
+                            <div className="modal-content">
+                              <span
+                                className="modal-close"
+                                onClick={closeModal}
+                              >
+                                &times;
+                              </span>
+                              <BookingForm
+                                selectedServices={selectedServices}
+                                event={event}
+                                totalPrice={totalPrice}
+                                gst={gst}
+                                onModalClose={closeModal}
+                              />
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
+        )}
+      </Container>
 
-          <Container className="class-divider footer-section">
-            <Footer />
-          </Container>
-        </div>
-      )}
-      ;
-    </Container>
+      <AppBar position="static" color="default" className="mt-5">
+      <Footer />
+      </AppBar>
+      
+  
+    </div>
   );
 };
 

@@ -1,17 +1,9 @@
-// ImageComponent.js
-
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const ImageComponent = ({ event }) => {
   return (
-    <div
-      style={{
-        width: "60%",
-        height: "40%",
-        margin: "auto",
-      }}
-    >
+    <div>
       <div
         id="carouselExampleControls"
         class="carousel slide"

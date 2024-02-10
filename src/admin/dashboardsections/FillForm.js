@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import "./FillForm.css";
 import { stateCityData } from "./StateandCities";
 import {
+  Alert,
   LinearProgress,
   Box,
   TextField,
@@ -16,7 +17,8 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
-} from "@material-ui/core";
+  Paper,
+} from "@mui/material";
 
 const FillForm = ({ onEventAdded }) => {
   const navigate = useNavigate();
@@ -95,7 +97,9 @@ const FillForm = ({ onEventAdded }) => {
         token,
         onUploadProgress
       );
+      
       setShowProgressBar(false);
+      
       const newEvent = response.data;
       swal({
         title: "Good job!",
@@ -120,7 +124,7 @@ const FillForm = ({ onEventAdded }) => {
       });
       onEventAdded(newEvent);
     } catch (error) {
-      setError("You are required to fill in only two events");
+      setError("You are required to fill in only one events");
     }
   };
 
@@ -159,8 +163,10 @@ const FillForm = ({ onEventAdded }) => {
   };
 
   return (
-    <Container className="mt-4">
-      <Typography variant="h4">Event Form</Typography>
+    <Paper  style={{ backgroundColor: '#f0f3f5', }}>
+    <Container>
+      
+      <Typography variant="h4" style={{ fontFamily: 'Arial, sans-serif' }}>Submission of Advertising Materials</Typography>
       {showProgressBar ? (
         <Box
           sx={{
@@ -399,7 +405,11 @@ const FillForm = ({ onEventAdded }) => {
           )}
         </form>
       )}
-    </Container>
+      <Alert severity="info" style={{ marginTop: "16px" }}>
+            You are limited to adding only a singular event.
+            </Alert>
+      </Container>
+    </Paper>
   );
 };
 

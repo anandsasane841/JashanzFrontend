@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { AppBar, Tabs, Tab, useMediaQuery, useTheme } from "@mui/material";
 import {
-  faUser,
-  faCalendar,
-  faComments,
-  faPen,
-} from "@fortawesome/free-solid-svg-icons";
-import { Tabs, Tab } from "@material-ui/core";
+  Person as PersonIcon,
+  Event as EventIcon,
+  Chat as ChatIcon,
+  Create as CreateIcon,
+} from "@mui/icons-material";
 import AdminInfo from "./dashboardsections/AdminInfo";
 import EventInfo from "./dashboardsections/EventInfo";
 import CustomerInteraction from "./dashboardsections/CustomerInteraction";
 import FillForm from "./dashboardsections/FillForm";
 import JashanService from "../service/JashanService";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./AdminDashboard.css";
 import Header from "../Header";
 import Footer from "../Footer";
 
@@ -24,6 +21,8 @@ const AdminDashboard = () => {
   const [events, setEvents] = useState([]);
   const [activeTab, setActiveTab] = useState("admin");
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isLoggedIn = true;
 
   const addEvent = (newEvent) => {
@@ -57,55 +56,42 @@ const AdminDashboard = () => {
 
   return (
     <div>
-      <div className="class-divider">
+      <AppBar position="static" color="default" style={{ height: "80px" }}>
         <Header isLoggedIn={isLoggedIn} />
-      </div>
-
-      <div className="container mt-4 text-center">
+      </AppBar>
+      <div className="container mt-5 text-center">
         <Tabs
           value={activeTab}
           onChange={(e, value) => switchTab(value)}
-          centered
+          centered={!isMobile}
+          variant={isMobile ? "scrollable" : "standard"}
+          scrollButtons={isMobile ? "auto" : "off"}
         >
           <Tab
-            label={
-              <div>
-                <FontAwesomeIcon icon={faUser} className="fs-5" />
-                <p className="dashboard-tabs-headings"> Personal Info</p>
-              </div>
-            }
+            icon={<PersonIcon />}
+            label={<p className="dashboard-tabs-headings"> Personal Info</p>}
             value="admin"
           />
           <Tab
-            label={
-              <div>
-                <FontAwesomeIcon icon={faCalendar} className="fs-5" />
-                <p className="dashboard-tabs-headings">Event Info</p>
-              </div>
-            }
+            icon={<EventIcon />}
+            label={<p className="dashboard-tabs-headings">Event Info</p>}
             value="events"
           />
           <Tab
+            icon={<ChatIcon />}
             label={
-              <div>
-                <FontAwesomeIcon icon={faComments} className="fs-5" />
-                <p className="dashboard-tabs-headings">Customer Interaction</p>
-              </div>
+              <p className="dashboard-tabs-headings">Customer Interaction</p>
             }
             value="interaction"
           />
           <Tab
-            label={
-              <div>
-                <FontAwesomeIcon icon={faPen} className="fs-5" />
-                <p className="dashboard-tabs-headings">Fill Form</p>
-              </div>
-            }
+            icon={<CreateIcon />}
+            label={<p className="dashboard-tabs-headings">Fill Form</p>}
             value="form"
           />
         </Tabs>
 
-        <div className="tab-content class-divider bg-white text-dark">
+        <div className="tab-content  bg-white text-dark">
           <div
             className={`tab-pane fade ${
               activeTab === "admin" ? "show active" : ""
@@ -146,9 +132,9 @@ const AdminDashboard = () => {
           </div>
         </div>
       </div>
-      <div className="class-divider">
+      <AppBar position="static" color="default" className="mt-5">
         <Footer />
-      </div>
+      </AppBar>
     </div>
   );
 };

@@ -1,23 +1,25 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 import {
   Grid,
   Typography,
   Select,
   MenuItem,
   TextField,
-  Card,
-  CardContent,
-} from "@material-ui/core";
-import "./BookingRequests.css";
-import Header from "../Header";
+  Paper,
+  AppBar,
+  IconButton,
+} from "@mui/material";
+import RotateLeftIcon from '@mui/icons-material/RotateLeft';import Header from "../Header";
 import Footer from "../Footer";
 import JashanService from "../service/JashanService";
-
+import "./BookingRequests.css";
 const BookingRequests = () => {
   const isLoggedIn = true;
   const [bookingData, setBookingData] = useState([]);
   const [userId, setUserId] = useState(null);
-
+  const navigate = useNavigate();
   const [filters, setFilters] = useState({
     bookingStatus: "",
     bookingDate: "",
@@ -60,15 +62,25 @@ const BookingRequests = () => {
     return false;
   });
 
+  const handleViewEventClick = (eventId) => {
+    navigate(`/bookevent/${eventId}`);
+  };
+
   return (
     <div>
-      <div className="class-divider">
+      <AppBar position="static" color="default" style={{ height: "80px" }}>
         <Header isLoggedIn={isLoggedIn} />
-      </div>
-      <div className="container">
-        <Typography variant="h5" align="center" className="booking-heading mb-4">
-          Booking Console📋
-        </Typography>
+      </AppBar>
+      <div className="class-divider mt-5 bg-light">
+        <div className="text-center">
+          <strong className="fs-3">Booking Console</strong>
+          <img
+            width="50"
+            height="50"
+            src=" https://icons.iconarchive.com/icons/paomedia/small-n-flat/256/calendar-clock-icon.png"
+            alt="bookings"
+          />
+        </div>
 
         <Grid container spacing={4} alignItems="center">
           <Grid item xs={12} md={4}>
@@ -105,52 +117,77 @@ const BookingRequests = () => {
               variant="outlined"
               placeholder="Filter by Program Name"
               value={filters.event}
-              onChange={(e) => setFilters({ ...filters, event: e.target.value })}
+              onChange={(e) =>
+                setFilters({ ...filters, event: e.target.value })
+              }
             />
           </Grid>
         </Grid>
 
-        <Grid container spacing={4}>
+        <Grid container spacing={4} sx={{ marginTop: 4 }}>
           {filteredBookings.length > 0 ? (
             filteredBookings.map((booking, index) => (
               <Grid item xs={12} md={6} key={index}>
-                <div className="card mb-4">
-                  <div className="text-center pt-4 pb-4">
-                    <p className="card-text booking-text">
-                    {booking.eventName} Coordinator:{" "}
+                <Paper
+                  elevation={3}
+                  sx={{
+                    padding: 3,
+                    textAlign: "center",
+                    backgroundColor:
+                      booking.bookingStatus === "ACCEPTED"
+                        ? "#d4edda" // Green background for accepted bookings
+                        : booking.bookingStatus === "REJECTED"
+                        ? "#f8d7da" // Red background for rejected bookings
+                        : "white", // Default background color
+                  }}
+                  className={`chat-message ${
+                    booking.bookingStatus === "ACCEPTED"
+                      ? "accepted"
+                      : booking.bookingStatus === "REJECTED"
+                      ? "rejected"
+                      : "pending"
+                  }`}
+                >
+                  <div className="message-content">
+                   
+                    <p className="message-inside-content">
+                      {booking.eventName} Coordinator:{" "}
                       <span className="booking-values">
                         {booking.adminFirmName}
                       </span>
                     </p>
-                    <p className="card-text booking-text">
+                    <p className="message-inside-content">
                       Program:{" "}
-                      <span className="booking-values">{booking.eventName}</span>
+                      <span className="booking-values">
+                        {booking.eventName}
+                      </span>
                     </p>
-                    <p className="card-text booking-text">
+
+                    <p className="message-inside-content">
                       Additional Services:{" "}
                       <span className="booking-values">
                         {booking.additionalServices}
                       </span>
                     </p>
-                    <p className="card-text booking-text">
-                    PaymentAmount:{" "}
+                    <p className="message-inside-content">
+                      PaymentAmount:{" "}
                       <span className="booking-values">
                         {booking.bookingAmount}
                       </span>
                     </p>
-                    <p className="card-text booking-text">
+                    <p className="message-inside-content">
                       Booking Date:{" "}
                       <span className="booking-values">
                         {booking.bookingDate}
                       </span>
                     </p>
-                    <p className="card-text booking-text">
+                    <p className="message-inside-content">
                       Booking Time:{" "}
                       <span className="booking-values">
                         {booking.bookingTime}
                       </span>
                     </p>
-                    <p className="card-text booking-text">
+                    <p className="message-inside-content">
                       Booking Status:{" "}
                       <span
                         className={
@@ -161,35 +198,48 @@ const BookingRequests = () => {
                             : "text-warning"
                         }
                       >
-                        {booking.bookingStatus !== "ACCEPTED" && booking.bookingStatus !== "REJECTED" ? "PENDING" : booking.bookingStatus}
-                      </span>
-                    </p>{" "}
-
-                    {booking.bookingStatus === "Accepted" && (
-                  <div>
-                    <p className="card-text booking-text">
-                      Contact Number:{" "}
-                      <span className="text-dark">
-                        {booking.adminContactNumber}
+                        {booking.bookingStatus !== "ACCEPTED" &&
+                        booking.bookingStatus !== "REJECTED"
+                          ? "PENDING"
+                          : booking.bookingStatus}
                       </span>
                     </p>
+                    {booking.bookingStatus === "ACCEPTED" && (
+                      <p className="message-inside-content">
+                        Contact Number:{" "}
+                        <span className="text-dark booking-values">
+                          {booking.adminContactNumber}
+                        </span>
+                      </p>
+                    )}
+                    <div className="text-right">
+                    <IconButton
+                      onClick={() => handleViewEventClick(booking.eventId)} // Corrected onClick
+                    >
+                      <RotateLeftIcon />
+                    </IconButton>
+                    </div>
                   </div>
-                )}
-                  </div>
-                </div>
-             
+                </Paper>
               </Grid>
             ))
           ) : (
-            <Typography variant="body1" className="text-right booking-text">
-              No bookings found matching the selected filters.
-            </Typography>
+            <Grid item xs={12} sx={{ textAlign: "center", marginTop: 4 }}>
+              <Typography
+                variant="body1"
+                gutterBottom
+                sx={{ color: "#6c757d", fontStyle: "italic" }}
+              >
+                No bookings available.
+              </Typography>
+            </Grid>
           )}
         </Grid>
       </div>
-      <div className="class-divider ">
+
+      <AppBar position="static" color="default" className="mt-5">
         <Footer />
-      </div>
+      </AppBar>
     </div>
   );
 };

@@ -15,6 +15,9 @@ import BookingForm from "./Home/BookingForm";
 import BookingRequests from "./Home/BookingRequests";
 import CustomLoader from "./CustomLoader";
 import Aboutus from "./Aboutus";
+import ForgotPassword from "./customer/ForgotPassword";
+import AdminForgotPassword from "./admin/AdminForgotPassword";
+import './App.css';
 
 function App() {
   const [isAuthenticatedUser, setIsAuthenticatedUser] = useState(
@@ -40,7 +43,7 @@ function App() {
       ) : (
         <Routes>
           <Route
-            path="/logout/:isLoggedout"
+            path="/"
             element={
               <CustomerLogin
                 isAuthenticatedUser={isAuthenticatedUser}
@@ -54,7 +57,14 @@ function App() {
               isAuthenticatedUser ? <BookingRequests /> : <Navigate to="/" />
             }
           />
+
           <Route path="/aboutus" element={<Aboutus />} />
+          <Route path="/forgotPassword" element={<ForgotPassword />} />
+          <Route
+            path="/adminForgotPassword"
+            element={<AdminForgotPassword />}
+          />
+
           <Route
             path="/home"
             element={
@@ -94,10 +104,7 @@ function App() {
               isAuthenticatedUser ? (
                 <Navigate to="/home" />
               ) : (
-                <CustomerLogin
-                  isAuthenticatedUser={isAuthenticatedUser}
-                  setIsAuthenticatedUser={setIsAuthenticatedUser}
-                />
+                <Navigate to="/" />
               )
             }
           />

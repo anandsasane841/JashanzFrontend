@@ -1,23 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Header from "../Header";
 import Footer from "../Footer";
 import JashanService from "../service/JashanService";
 import "./CustomerLogin.css";
-import swal from "sweetalert";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import CustomLoader from "../CustomLoader";
-
+import { AppBar, Snackbar } from "@mui/material";
+import { Link as MaterialLink } from "@mui/material";
 const CustomerLogin = ({ isAuthenticatedUser, setIsAuthenticatedUser }) => {
-  const { isLoggedout } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
+  const isLoggedout = location.state && location.state.isLoggedout;
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTab, setSelectedTab] = useState("sign-in");
-
-  const handleTabChange = (tab) => {
-    setSelectedTab(tab);
-  };
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -26,6 +22,27 @@ const CustomerLogin = ({ isAuthenticatedUser, setIsAuthenticatedUser }) => {
     role: "ROLE_USER",
     emailormobile: "",
   });
+
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [notification, setNotification] = useState(null);
+
+  const handleLogoutNotification = () => {
+    setNotification({
+      message: "You have been successfully logged out.",
+      severity: "success",
+    });
+  };
+
+  useEffect(() => {
+    if (isLoggedout) {
+     // console.log("isloggedOut" + isLoggedout);
+      handleLogoutNotification();
+    }
+  }, [isLoggedout]);
+
+  const handleTabChange = (tab) => {
+    setSelectedTab(tab);
+  };
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -36,24 +53,27 @@ const CustomerLogin = ({ isAuthenticatedUser, setIsAuthenticatedUser }) => {
     setIsLoading(true);
     try {
       const user_login = {
-        emailormobile: formData.emailormobile, // Use this for email
+        emailormobile: formData.emailormobile,
         password: formData.password,
       };
-      console.log("USER LOGIN " + JSON.stringify(user_login));
+    //  console.log("USER LOGIN " + JSON.stringify(user_login));
       const response = await JashanService.user_login(user_login);
 
       if (response.status === 200) {
         localStorage.setItem("token", response.data.jwtToken);
-        console.log("User logged in with token:", response.data.jwtToken);
-        setIsAuthenticatedUser(true); // Update isAuthenticated state
+      //  console.log("User logged in with token:", response.data.jwtToken);
+        setIsAuthenticatedUser(true);
         navigate("/home");
       } else {
-        console.error("Token not received in response.");
+      //  console.error("Token not received in response.");
       }
     } catch (error) {
-      setShowErrorAlert(true);
+      setNotification({
+        message: "Invalid username or password",
+        severity: "error",
+      });
     } finally {
-      setIsLoading(false); // Set isLoading to false when login is complete
+      setIsLoading(false);
     }
   };
 
@@ -62,62 +82,68 @@ const CustomerLogin = ({ isAuthenticatedUser, setIsAuthenticatedUser }) => {
 
     try {
       const mobile = formData.mobileNumber;
-      const res= await JashanService.generateUserOtp(mobile);
-      console.log(res.data);
-      if (res.status=== 200) {
+      const res = await JashanService.generateUserOtp(mobile);
+     // console.log(res.data);
+      if (res.status === 200) {
         const otp = prompt("Please enter the OTP sent to your email/mobile");
 
         if (!otp) {
-          alert("Please enter the OTP to complete registration.");
+          setNotification({
+            message: "Please enter the OTP to complete registration.",
+            severity: "warning",
+          });
           return;
         }
         try {
           const response = await JashanService.user_register(formData, otp);
-          console.log("User registered:", response.data);
+       //   console.log("User registered:", response.data);
 
-          swal({
-            title: "Good job!",
-            text: "You have successfully registered!",
-            icon: "success",
-            button: "Aww yiss!",
+          setNotification({
+            message: "You have successfully registered!",
+            severity: "success",
           });
         } catch (error) {
           if (error.response && error.response.status === 401) {
-            alert("Please enter a valid OTP.");
-          } else{
-            console.error("Error during user registration:", error);
-            setShowError(true);
+            setNotification({
+              message: "Please enter a valid OTP.",
+              severity: "error",
+            });
+          } else {
+            setNotification({
+              message: "Error during user registration",
+              severity: "error",
+            });
           }
         }
       }
     } catch (error) {
-      alert("Failed to generate OTP. Please try again.");
+      setNotification({
+        message: "Failed to generate OTP. Please try again.",
+        severity: "error",
+      });
     }
   };
-
-  // State for displaying the success alert
-  const [showErrorAlert, setShowErrorAlert] = useState(false);
-  const [showError, setShowError] = useState(false);
-  const isLoggedIn = false;
-
-  const [isDarkMode, setIsDarkMode] = useState(false); // Add this state for dark mode
 
   // Toggle dark mode
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
   };
+  const handleLinkForgotPassword = () => {
+    navigate(`/forgotPassword`);
+  };
+
   return (
     <div>
       {isLoading ? (
         <CustomLoader />
       ) : (
         <div>
-          <div className="class-divider">
-            <Header isLoggedIn={isLoggedIn} />
-          </div>
+          <AppBar position="static" color="default" style={{ height: "80px" }}>
+            <Header />
+          </AppBar>
 
-          <div className="class-divider">
-            <div className="login-wrap">
+          <div>
+            <div className="login-wrap mt-5">
               <div className="login-html">
                 <input
                   id="tab-1"
@@ -145,29 +171,25 @@ const CustomerLogin = ({ isAuthenticatedUser, setIsAuthenticatedUser }) => {
                   <div className="sign-in-htm">
                     <form onSubmit={handleSignInSubmit}>
                       <div className="group">
-                        <label htmlFor="user" className="label">
-                          Email or Mobile Number
-                        </label>
                         <input
                           id="user"
                           type="text"
                           className="input"
                           required
+                          placeholder="Enter  Email or Mobile Number"
                           name="emailormobile"
                           value={formData.emailormobile}
                           onChange={handleInputChange}
                         />
                       </div>
                       <div className="group">
-                        <label htmlFor="pass" className="label">
-                          Password
-                        </label>
                         <input
                           id="pass"
                           type="password"
                           className="input"
                           data-type="password"
                           required
+                          placeholder="Enter Password"
                           name="password"
                           value={formData.password}
                           onChange={handleInputChange}
@@ -176,32 +198,37 @@ const CustomerLogin = ({ isAuthenticatedUser, setIsAuthenticatedUser }) => {
                       <div className="group">
                         <input
                           type="submit"
-                          className="button jash-button"
+                          className="btn btn-primary"
+                          style={{
+                            display: "block",
+                            width: "100%",
+                            borderRadius: "20px",
+                            padding: "10px",
+                          }}
                           value="Sign In"
                         />
                       </div>
+                      <p className="text-right">
+                        <MaterialLink
+                          component="button"
+                          variant="body2"
+                          style={{
+                            color: "white",
+                            textDecoration: "none",
+                            fontWeight: "bold",
+                            cursor: "pointer",
+                          }}
+                          onClick={handleLinkForgotPassword}
+                        >
+                          Forgot Password
+                        </MaterialLink>
+                      </p>
                     </form>
                     <div className="hr"></div>
-                    {showErrorAlert && (
-                      <div className="alert alert-danger">
-                        Invalid username or password
-                      </div>
-                    )}
-                    {showError && (
-                      <div className="alert alert-danger">
-                        User with the same email already exists
-                      </div>
-                    )}
-                    {isLoggedout != null && (
-                      <div className="alert alert-success">{isLoggedout}</div>
-                    )}
                   </div>
                   <div className="for-pwd-htm">
                     <form onSubmit={handleSignUpSubmit}>
                       <div className="group">
-                        <label htmlFor="name" className="label">
-                          Name
-                        </label>
                         <input
                           id="name"
                           type="text"
@@ -213,9 +240,6 @@ const CustomerLogin = ({ isAuthenticatedUser, setIsAuthenticatedUser }) => {
                         />
                       </div>
                       <div className="group">
-                        <label htmlFor="email" className="label">
-                          Email
-                        </label>
                         <input
                           id="email"
                           type="email"
@@ -227,9 +251,6 @@ const CustomerLogin = ({ isAuthenticatedUser, setIsAuthenticatedUser }) => {
                         />
                       </div>
                       <div className="group">
-                        <label htmlFor="contact_number" className="label">
-                          Contact Number
-                        </label>
                         <input
                           id="contact_number"
                           type="tel"
@@ -241,9 +262,6 @@ const CustomerLogin = ({ isAuthenticatedUser, setIsAuthenticatedUser }) => {
                         />
                       </div>
                       <div className="group">
-                        <label htmlFor="password" className="label">
-                          Password
-                        </label>
                         <input
                           id="password"
                           type="password"
@@ -252,6 +270,7 @@ const CustomerLogin = ({ isAuthenticatedUser, setIsAuthenticatedUser }) => {
                           name="password"
                           value={formData.password}
                           onChange={handleInputChange}
+                          minLength={6}
                         />
                       </div>
                       <input type="hidden" name="role" value={formData.role} />{" "}
@@ -259,7 +278,13 @@ const CustomerLogin = ({ isAuthenticatedUser, setIsAuthenticatedUser }) => {
                       <div className="group">
                         <input
                           type="submit"
-                          className="button"
+                          className="btn btn-primary"
+                          style={{
+                            display: "block",
+                            width: "100%",
+                            borderRadius: "20px",
+                            padding: "10px",
+                          }}
                           value="Register"
                         />
                       </div>
@@ -271,12 +296,18 @@ const CustomerLogin = ({ isAuthenticatedUser, setIsAuthenticatedUser }) => {
             </div>
           </div>
 
-          <div className="class-divider">
+          <AppBar position="static" color="default" className="mt-5">
             <Footer />
-          </div>
+          </AppBar>
+          <Snackbar
+            open={notification !== null}
+            autoHideDuration={6000}
+            onClose={() => setNotification(null)}
+            message={notification ? notification.message : ""}
+            severity={notification ? notification.severity : "info"}
+          />
         </div>
       )}
-      ;
     </div>
   );
 };

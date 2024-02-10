@@ -1,71 +1,83 @@
-import React from "react";
-import "./FilterComponent.css";
+import React, { useState } from "react";
+import Slider from "react-slick";
+import { Typography, Paper } from "@mui/material";
+import CakeIcon from '@mui/icons-material/Cake';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import PartyModeIcon from '@mui/icons-material/PartyMode';
+import EventIcon from '@mui/icons-material/Event';
+import HeadsetIcon from '@mui/icons-material/Headset';
+
+import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick-theme.css";
+import './FilterComponent.css';
 
 const options = [
   {
     value: "Birthday",
-    image: "https://jashanzprimary.s3.ap-south-1.amazonaws.com/birthday.png",
+    icon: <img width="100" height="100" src="https://icons.iconarchive.com/icons/icondrawer/gifts/256/cake-icon.png" alt="birthday-cake"/> ,
     text: "A Memorable Birthday Bash!",
   },
   {
     value: "Marriage Ceremony",
-    image: "https://jashanzprimary.s3.ap-south-1.amazonaws.com/day_wedding.png",
+    icon: <img width="100" height="100" src="https://icons.iconarchive.com/icons/aha-soft/free-large-love/512/Wedding-Rings-icon.png" alt="marriage"/>,
     text: "Crafting Your Dream Wedding",
   },
   {
     value: "Get Together or Party",
-    image: "https://jashanzprimary.s3.ap-south-1.amazonaws.com/celebrationV.1.png",
+    icon: <img width="100" height="100" src="https://icons.iconarchive.com/icons/aha-soft/standard-christmas/256/New-Year-Party-icon.png" alt="marriage"/>,
     text: "Gather and Celebrate!",
   },
   {
     value: "Occasion Organizers",
-    image: "https://jashanzprimary.s3.ap-south-1.amazonaws.com/Tmwk.png",
+    icon: <img width="100" height="100" src="https://icons.iconarchive.com/icons/aha-soft/large-calendar/256/Calendar-icon.png" alt="event-management-team"/>,
     text: "Your Event, Our Expertise",
   },
   {
     value: "Disc Jockey",
-   image: "https://jashanzprimary.s3.ap-south-1.amazonaws.com/DJ.png",
+    icon: <img width="100" height="100" src="https://icons.iconarchive.com/icons/iconshock/disc-jockey/256/headphones-icon.png" alt="dj"/>,
     text: "Choose your favorite DJ",
   },
 ];
 
-const FilterComponent = ({
-  selectedFilter,
-  setSelectedFilter,
-  getEventsByFilter,
-}) => {
-  const handleSpecializationChange = (value) => {
+const FilterComponent = ({ selectedFilter, setSelectedFilter, getEventsByFilter }) => {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const settings = {
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    className: "slider",
+    afterChange: (current) => {
+      handleSpecializationChange(options[current].value, current);
+    },
+  };
+
+  const handleSpecializationChange = (value, index) => {
     setSelectedFilter(value);
-    getEventsByFilter(value); // Call the getEventsByFilter function with the selected value
+    getEventsByFilter(value);
+    setSelectedIndex(index);
   };
 
   return (
-    <div className="circle-container">
-      <div
-        value={selectedFilter}
-        onClick={handleSpecializationChange}
-        className="d-flex justify-content-center"
-      >
-        {options.map((option) => (
-          <div key={option.value} className="p-1 px-2 mx-3">
-            <div className="circle">
-              <img
-                src={option.image}
-                alt={option.value}
-                onClick={() => handleSpecializationChange(option.value)}
-              />
+    <Slider {...settings}>
+      {options.map((option, index) => (
+        <div key={option.value}>
+          <div
+            elevation={3}
+            className={`option ${index === selectedIndex ? 'selected' : ''}`}
+            onClick={() => handleSpecializationChange(option.value, index)}
+          >
+            <div>
+              {option.icon}
             </div>
-            <option
-              className="circle-heading fs-6 text-dark"
-              value={option.value}
-              onClick={() => handleSpecializationChange(option.value)}
-            >
+            <Typography variant="subtitle1" className="fs-4">
               {option.text}
-            </option>
+            </Typography>
           </div>
-        ))}
-      </div>
-    </div>
+        </div>
+      ))}
+    </Slider>
   );
 };
 

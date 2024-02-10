@@ -4,11 +4,11 @@ import "./AdminLogin.css";
 import Header from "../Header";
 import Footer from "../Footer";
 import JashanService from "../service/JashanService";
-import swal from "sweetalert";
 import { useNavigate } from "react-router-dom";
 import Typed from "react-typed";
 import CustomLoader from "../CustomLoader";
-
+import { AppBar, Snackbar } from "@mui/material"; // Import Snackbar
+import { Link as MaterialLink } from "@mui/material";
 
 const AdminLogin = ({ isAuthenticatedAdmin, setIsAuthenticatedAdmin }) => {
   const navigate = useNavigate();
@@ -24,6 +24,9 @@ const AdminLogin = ({ isAuthenticatedAdmin, setIsAuthenticatedAdmin }) => {
     emailormobile: "",
   });
   const [selectedTab, setSelectedTab] = useState("sign-in");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [notification, setNotification] = useState(null); // Notification state
 
   const handleTabChange = (tab) => {
     setSelectedTab(tab);
@@ -32,9 +35,6 @@ const AdminLogin = ({ isAuthenticatedAdmin, setIsAuthenticatedAdmin }) => {
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  const [isLoading, setIsLoading] = useState(false);
-  const [showErrorAlert, setShowErrorAlert] = useState(false);
-  const [showError, setShowError] = useState(false);
 
   const handleSignInSubmit = (e) => {
     e.preventDefault();
@@ -50,14 +50,17 @@ const AdminLogin = ({ isAuthenticatedAdmin, setIsAuthenticatedAdmin }) => {
         localStorage.setItem("admin-token", response.data.jwtToken);
         const username = response.data.username;
 
-        console.log("User logged in with token:", Token);
+      //  console.log("User logged in with token:", Token);
         setIsAuthenticatedAdmin(true); // Update isAuthenticated state
 
         navigate(`/admin-dashboard/${username}`);
       })
       .catch((error) => {
-        console.log(error);
-        setShowErrorAlert(true); // Show error alert on login failure
+     //   console.log(error);
+        setNotification({
+          message: "Invalid username or password", // Set error message
+          severity: "error", // Set severity to error
+        });
       })
       .finally(() => {
         setIsLoading(false);
@@ -70,60 +73,86 @@ const AdminLogin = ({ isAuthenticatedAdmin, setIsAuthenticatedAdmin }) => {
     try {
       const mobile = formData.mobileNumber;
       const res = await JashanService.generateAdminOtp(mobile);
-console.log(res.data);
+    //  console.log(res.data);
       if (res.status === 200) {
         const otp = prompt("Please enter the OTP sent to your email/mobile");
 
         if (!otp) {
-          alert("Please enter the OTP to complete registration.");
+          setNotification({
+            message: "Please enter the OTP to complete registration.",
+            severity: "success",
+          });
+
           return;
         }
 
         try {
           const response = await JashanService.admin_register(formData, otp);
-          console.log("User registered:", response.data);
-          swal({
-            title: "Good job!",
-            text: "You have successfully Registered",
-            icon: "success",
-            button: "Aww yiss!",
+         // console.log("User registered:", response.data);
+          setNotification({
+            message: "You have successfully registered!",
+            severity: "success",
           });
         } catch (error) {
-         
           if (error.response && error.response.status === 401) {
             alert("Please enter a valid OTP.");
-          } else{
-            console.error("Error during user registration:", error);
-            setShowError(true);
+          } else {
+            setNotification({
+              message: "Error during user registration:",
+              severity: "error",
+            });
           }
         }
       }
     } catch (error) {
-      
-      alert("Failed to generate OTP. Please try again.");
+      setNotification({
+        message: "Failed to generate OTP. Please try again.",
+        severity: "error",
+      });
     }
+  };
+  const handleLinkAdminForgotPassword = () => {
+    navigate(`/adminForgotPassword`);
   };
 
   const sentences = [
-     "This form is exclusively designated for use by administrators, event organizers, birthday planners, DJ services, and banquet managers.",
-     "Customers and general users are kindly advised not to fill out this form.",
+    "This form is exclusively designated for use by administrators, event organizers, birthday planners, DJ services, and banquet managers.",
+    "Customers and general users are kindly advised not to fill out this form.",
   ];
+
   return (
     <div>
       {isLoading ? (
         <CustomLoader />
       ) : (
         <div>
-          <div className="class-divider">
+          <AppBar position="static" color="default" style={{ height: "80px" }}>
             <Header />
-          </div>
+          </AppBar>
 
-          <div className="class-divider">
-            <div className="text-center">
-            <img src="https://jashanzprimary.s3.ap-south-1.amazonaws.com/AdminLogo+(1).png" alt="admin_portal" width="200" height="200" />
+          <div>
+            <div className="text-center mt-5">
+              <img
+                src="https://icons.iconarchive.com/icons/icojam/blue-bits/256/user-settings-icon.png"
+                width="100"
+                height="100"
+                alt="admin"
+              />
+              <div className="program-manager-font-style fs-6">
+                <span
+                  style={{
+                    color: "#0088a9",
+                    fontSize: "30px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Program Manager Administrator
+                </span>
               </div>
-            <p class="text-center font-weight-bold fs-5">
-            ⚠️ <Typed strings={sentences} typeSpeed={90} backSpeed={70} loop />
+            </div>
+            <p class="text-center text-dark fs-5">
+              ⚠️{" "}
+              <Typed strings={sentences} typeSpeed={90} backSpeed={70} loop />
             </p>
 
             <div className="login-wrap">
@@ -154,29 +183,25 @@ console.log(res.data);
                   <div className="sign-in-htm">
                     <form onSubmit={handleSignInSubmit}>
                       <div className="group">
-                        <label htmlFor="user" className="label">
-                          Email or Mobile Number
-                        </label>
                         <input
                           id="user"
                           type="text"
                           className="input"
                           required
+                          placeholder="Enter Email or Mobile Number"
                           name="emailormobile"
                           value={formData.emailormobile}
                           onChange={handleInputChange}
                         />
                       </div>
                       <div className="group">
-                        <label htmlFor="pass" className="label">
-                          Password
-                        </label>
                         <input
                           id="pass"
                           type="password"
                           className="input"
                           data-type="password"
                           required
+                          placeholder="Enter Password"
                           name="password"
                           value={formData.password}
                           onChange={handleInputChange}
@@ -185,34 +210,42 @@ console.log(res.data);
                       <div className="group">
                         <input
                           type="submit"
-                          className="button"
+                          className="btn btn-primary"
+                          style={{
+                            display: "block",
+                            width: "100%",
+                            borderRadius: "20px",
+                            padding: "10px",
+                          }}
                           value="Sign In"
                         />
                       </div>
+                      <p class="text-right">
+                        <MaterialLink
+                          component="button"
+                          variant="body2"
+                          style={{
+                            color: "white",
+                            textDecoration: "none",
+                            fontWeight: "bold",
+                            cursor: "pointer",
+                          }}
+                          onClick={handleLinkAdminForgotPassword}
+                        >
+                          Forgot Password
+                        </MaterialLink>
+                      </p>
                     </form>
                     <div className="hr"></div>
-                    {showErrorAlert && (
-                      <div className="alert alert-danger">
-                        Invalid username or password
-                      </div>
-                    )}
-                    {showError && (
-                      <div className="alert alert-danger">
-                        User with the same email already exists
-                      </div>
-                    )}
                   </div>
                   <div className="for-pwd-htm">
                     <form onSubmit={handleSignUpSubmit}>
                       <div className="group">
-                        <label htmlFor="firmName" className="label">
-                          Firm Name
-                        </label>
                         <input
                           id="firmName"
                           type="text"
                           className="input"
-                          placeholder="Firm Name"
+                          placeholder="Enter Firm Name"
                           name="firmName"
                           value={formData.firmName}
                           onChange={handleInputChange}
@@ -220,10 +253,6 @@ console.log(res.data);
                         />
                       </div>
                       <div className="group">
-                        
-                        <label htmlFor="specialization" className="label">
-                          Specialization
-                        </label>
                         <select
                           id="specialization"
                           className="input"
@@ -232,7 +261,10 @@ console.log(res.data);
                           onChange={handleInputChange}
                           required
                         >
-                          <option value="Birthday" selected>
+                          <option disabled value="">
+                            Choose Specialization
+                          </option>
+                          <option value="Birthday">
                             Birthday Booking (Birthday Hall)
                           </option>
                           <option value="Marriage Ceremony">
@@ -251,14 +283,11 @@ console.log(res.data);
                       </div>
 
                       <div className="group">
-                        <label htmlFor="mobileNumber" className="label">
-                          Mobile Number
-                        </label>
                         <input
                           id="mobileNumber"
                           type="text"
                           className="input"
-                          placeholder="Mobile Number"
+                          placeholder="Enter Mobile Number"
                           name="mobileNumber"
                           value={formData.mobileNumber}
                           onChange={handleInputChange}
@@ -268,17 +297,11 @@ console.log(res.data);
                         />
                       </div>
                       <div className="group">
-                        <label
-                          htmlFor="alternateMobileNumber"
-                          className="label"
-                        >
-                          Alternate Mobile Number
-                        </label>
                         <input
                           id="alternateMobileNumber"
                           type="text"
                           className="input"
-                          placeholder="Alternate Mobile Number"
+                          placeholder="Enter Alternate Mobile Number"
                           name="alternateMobileNumber"
                           value={formData.alternateMobileNumber}
                           onChange={handleInputChange}
@@ -288,14 +311,11 @@ console.log(res.data);
                         />
                       </div>
                       <div className="group">
-                        <label htmlFor="email" className="label">
-                          Email
-                        </label>
                         <input
                           id="email"
                           type="email"
                           className="input"
-                          placeholder="Your Email"
+                          placeholder="Enter Your Email"
                           name="email"
                           value={formData.email}
                           onChange={handleInputChange}
@@ -304,25 +324,29 @@ console.log(res.data);
                       </div>
 
                       <div className="group">
-                        <label htmlFor="password" className="label">
-                          Password
-                        </label>
                         <input
                           id="password"
                           type="password"
                           className="input"
-                          placeholder="Your Password"
+                          placeholder="Enter Your Password"
                           name="password"
                           value={formData.password}
                           onChange={handleInputChange}
                           required
+                          minLength={6}
                         />
                       </div>
                       <input type="hidden" name="role" value={formData.role} />
                       <div className="group">
                         <input
                           type="submit"
-                          className="button"
+                          className="btn btn-primary"
+                          style={{
+                            display: "block",
+                            width: "100%",
+                            borderRadius: "20px",
+                            padding: "10px",
+                          }}
                           value="Register"
                         />
                       </div>
@@ -333,9 +357,18 @@ console.log(res.data);
             </div>
           </div>
 
-          <div className="class-divider">
+          <AppBar position="static" color="default" className="mt-5">
             <Footer />
-          </div>
+          </AppBar>
+
+          {/* Snackbar for notification */}
+          <Snackbar
+            open={notification !== null}
+            autoHideDuration={6000}
+            onClose={() => setNotification(null)}
+            message={notification ? notification.message : ""}
+            severity={notification ? notification.severity : "info"}
+          />
         </div>
       )}
     </div>
